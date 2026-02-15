@@ -1104,7 +1104,6 @@
         let currentSection = 1;
         const totalSections = 8;
         let defendant2Added = false;
-        let requestFeeWaiver = false;
         
         console.log('Script loaded! Current section:', currentSection);
         
@@ -1364,7 +1363,7 @@
                     <h3>Fee Waiver</h3>
                     <div class="summary-item">
                         <div class="summary-label">Requesting Fee Waiver:</div>
-                        <div class="summary-value">${requestFeeWaiver ? 'Yes (JDF 205 and JDF 206 will be included)' : 'No'}</div>
+                        <div class="summary-value">${window.requestFeeWaiver ? 'Yes (JDF 205 and JDF 206 will be included)' : 'No'}</div>
                     </div>
                 </div>
             `;
@@ -1422,9 +1421,9 @@
             }
 
             // Check for fee waiver request
-            data.requestFeeWaiver = requestFeeWaiver;
+            data.requestFeeWaiver = window.requestFeeWaiver;
             
-            if (requestFeeWaiver) {
+            if (window.requestFeeWaiver) {
                 // Collect fee waiver data
                 const needInterpreterChecked = document.querySelector('input[name="needInterpreter"]:checked');
                 data.feeWaiver = {
@@ -2138,7 +2137,7 @@
         </div>
         
         <div style="margin: 15px 0;">
-            Dated: ${today} &nbsp;&nbsp;&nbsp;&nbsp; ______________________________________<br>
+            Dated: ___________________________ &nbsp;&nbsp;&nbsp;&nbsp; ______________________________________<br>
             <span style="margin-left: 180px;">Clerk of Court/Deputy Clerk</span>
         </div>
         
@@ -2153,7 +2152,7 @@
         <p style="margin-top: 20px;">I/we declare under penalty of perjury under the law of Colorado that the foregoing is true and correct. I/we have not filed in any Small Claims Court in this County more than 2 claims during this calendar month, nor more than 18 claims in this County this calendar year.</p>
         
         <div style="margin-top: 30px;">
-            Dated: ${today} &nbsp;&nbsp;&nbsp;&nbsp; ___________________________________________<br>
+            Dated: ___________________________ &nbsp;&nbsp;&nbsp;&nbsp; ___________________________________________<br>
             <span style="margin-left: 200px;">Plaintiff's Signature</span>
         </div>
     </div>
@@ -2251,7 +2250,7 @@
         </div>
         
         <div style="margin: 15px 0;">
-            Dated: ${today} &nbsp;&nbsp;&nbsp;&nbsp; ______________________________________<br>
+            Dated: ___________________________ &nbsp;&nbsp;&nbsp;&nbsp; ______________________________________<br>
             <span style="margin-left: 180px;">Clerk of Court/Deputy Clerk</span>
         </div>
         
@@ -2266,7 +2265,7 @@
         <p style="margin-top: 20px;">I/we declare under penalty of perjury under the law of Colorado that the foregoing is true and correct. I/we have not filed in any Small Claims Court in this County more than 2 claims during this calendar month, nor more than 18 claims in this County this calendar year.</p>
         
         <div style="margin-top: 30px;">
-            Dated: ${today} &nbsp;&nbsp;&nbsp;&nbsp; ___________________________________________<br>
+            Dated: ___________________________ &nbsp;&nbsp;&nbsp;&nbsp; ___________________________________________<br>
             <span style="margin-left: 200px;">Plaintiff's Signature</span>
         </div>
     </div>
@@ -2417,7 +2416,7 @@
         </div>
         
         <div style="margin: 15px 0;">
-            Dated: ${today} &nbsp;&nbsp;&nbsp;&nbsp; ______________________________________<br>
+            Dated: ___________________________ &nbsp;&nbsp;&nbsp;&nbsp; ______________________________________<br>
             <span style="margin-left: 180px;">Clerk of Court/Deputy Clerk</span>
         </div>
         
@@ -2432,7 +2431,7 @@
         <p style="margin-top: 20px;">I/we declare under penalty of perjury under the law of Colorado that the foregoing is true and correct. I/we have not filed in any Small Claims Court in this County more than 2 claims during this calendar month, nor more than 18 claims in this County this calendar year.</p>
         
         <div style="margin-top: 30px;">
-            Dated: ${today} &nbsp;&nbsp;&nbsp;&nbsp; ___________________________________________<br>
+            Dated: ___________________________ &nbsp;&nbsp;&nbsp;&nbsp; ___________________________________________<br>
             <span style="margin-left: 200px;">Plaintiff's Signature</span>
         </div>
     </div>
@@ -2547,7 +2546,7 @@
         </div>
         
         <div style="margin: 15px 0;">
-            Dated: ${today} &nbsp;&nbsp;&nbsp;&nbsp; ______________________________________<br>
+            Dated: ___________________________ &nbsp;&nbsp;&nbsp;&nbsp; ______________________________________<br>
             <span style="margin-left: 180px;">Clerk of Court/Deputy Clerk</span>
         </div>
         
@@ -2562,7 +2561,7 @@
         <p style="margin-top: 20px;">I/we declare under penalty of perjury under the law of Colorado that the foregoing is true and correct. I/we have not filed in any Small Claims Court in this County more than 2 claims during this calendar month, nor more than 18 claims in this County this calendar year.</p>
         
         <div style="margin-top: 30px;">
-            Dated: ${today} &nbsp;&nbsp;&nbsp;&nbsp; ___________________________________________<br>
+            Dated: ___________________________ &nbsp;&nbsp;&nbsp;&nbsp; ___________________________________________<br>
             <span style="margin-left: 200px;">Plaintiff's Signature</span>
         </div>
     </div>
