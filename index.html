@@ -20,8 +20,15 @@
             var allInputs = currentSectionEl.querySelectorAll('input[type="text"], input[type="date"], input[type="time"], input[type="tel"], textarea');
             for (var i = 0; i < allInputs.length; i++) {
                 var input = allInputs[i];
+                
+                // Skip if field is hidden or disabled
+                if (input.offsetParent === null || input.disabled) {
+                    continue;
+                }
+                
                 // Only check if it has the required attribute
                 if (input.hasAttribute('required') && (!input.value || input.value.trim() === '')) {
+                    console.log('Empty required field found:', input.id || input.name);
                     alert('Please fill in all required fields');
                     input.focus();
                     return false;
@@ -31,13 +38,22 @@
             // Check required checkboxes
             var requiredCheckboxes = currentSectionEl.querySelectorAll('input[type="checkbox"][required]');
             for (var i = 0; i < requiredCheckboxes.length; i++) {
-                if (!requiredCheckboxes[i].checked) {
+                var checkbox = requiredCheckboxes[i];
+                
+                // Skip if checkbox is hidden or disabled
+                if (checkbox.offsetParent === null || checkbox.disabled) {
+                    continue;
+                }
+                
+                if (!checkbox.checked) {
+                    console.log('Unchecked required checkbox:', checkbox.id || checkbox.name);
                     alert('Please check all required acknowledgments');
-                    requiredCheckboxes[i].focus();
+                    checkbox.focus();
                     return false;
                 }
             }
             
+            console.log('Validation passed for section', window.currentSection);
             var section = window.currentSection;
             
             // Section 5: generate summary
