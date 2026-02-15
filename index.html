@@ -1,0 +1,2933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colorado Small Claims Court - JDF 250 Form Questionnaire</title>
+    <script>
+        // Navigation functions defined in HEAD for maximum compatibility
+        window.currentSection = 1;
+        window.requestFeeWaiver = false;
+        
+        window.nextPage = function() {
+            console.log('Next clicked, section:', window.currentSection);
+            
+            // Validate current section
+            var currentSectionEl = document.querySelector('.section.active');
+            if (!currentSectionEl) return false;
+            
+            // Get all text inputs and textareas that should be filled
+            var allInputs = currentSectionEl.querySelectorAll('input[type="text"], input[type="date"], input[type="time"], input[type="tel"], textarea');
+            for (var i = 0; i < allInputs.length; i++) {
+                var input = allInputs[i];
+                // Only check if it has the required attribute
+                if (input.hasAttribute('required') && (!input.value || input.value.trim() === '')) {
+                    alert('Please fill in all required fields');
+                    input.focus();
+                    return false;
+                }
+            }
+            
+            // Check required checkboxes
+            var requiredCheckboxes = currentSectionEl.querySelectorAll('input[type="checkbox"][required]');
+            for (var i = 0; i < requiredCheckboxes.length; i++) {
+                if (!requiredCheckboxes[i].checked) {
+                    alert('Please check all required acknowledgments');
+                    requiredCheckboxes[i].focus();
+                    return false;
+                }
+            }
+            
+            var section = window.currentSection;
+            
+            // Section 5: generate summary
+            if (section === 5) {
+                if (typeof generateSummary === 'function') generateSummary();
+            }
+            
+            // Section 6: check fee waiver
+            if (section === 6) {
+                var feeWaiverYes = document.getElementById('feeWaiverYes');
+                window.requestFeeWaiver = feeWaiverYes && feeWaiverYes.checked;
+                if (!window.requestFeeWaiver) {
+                    if (typeof generateSummary === 'function') generateSummary();
+                    showSection(8);
+                    return false;
+                }
+            }
+            
+            // Section 7: go to review
+            if (section === 7) {
+                if (typeof generateSummary === 'function') generateSummary();
+                showSection(8);
+                return false;
+            }
+            
+            if (section < 8) {
+                showSection(section + 1);
+            }
+            return false;
+        };
+        
+        window.prevPage = function() {
+            var section = window.currentSection;
+            if (section > 1) {
+                if (section === 8 && !window.requestFeeWaiver) {
+                    showSection(6);
+                } else {
+                    showSection(section - 1);
+                }
+            }
+            return false;
+        };
+        
+        function showSection(num) {
+            var sections = document.querySelectorAll('.section');
+            for (var i = 0; i < sections.length; i++) {
+                sections[i].classList.remove('active');
+            }
+            var target = document.querySelector('.section[data-section="' + num + '"]');
+            if (target) target.classList.add('active');
+            window.currentSection = num;
+            var progress = (num / 8) * 100;
+            var bar = document.getElementById('progressBar');
+            if (bar) bar.style.width = progress + '%';
+            window.scrollTo(0, 0);
+        }
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: white;
+            transition: width 0.3s ease;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .section-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .section-description {
+            color: #666;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .label-hint {
+            font-weight: 400;
+            color: #666;
+            font-size: 13px;
+            margin-left: 5px;
+        }
+
+        input[type="text"],
+        input[type="date"],
+        input[type="time"],
+        input[type="tel"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.2s ease;
+            font-family: inherit;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        input[type="time"]:focus,
+        input[type="tel"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .phone-group {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 40px;
+        }
+
+        button {
+            flex: 1;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .info-box p {
+            color: #1e40af;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .warning-box {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .warning-box p {
+            color: #92400e;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .defendant-section {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .add-defendant-btn {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .add-defendant-btn:hover {
+            background: #5568d3;
+        }
+
+        .summary {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .summary h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .summary-item {
+            display: flex;
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            font-weight: 600;
+            color: #666;
+            width: 200px;
+            flex-shrink: 0;
+        }
+
+        .summary-value {
+            color: #333;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            .phone-group {
+                grid-template-columns: 1fr;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .summary-item {
+                flex-direction: column;
+            }
+
+            .summary-label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Colorado Small Claims Court</h1>
+            <p>JDF 250 - Notice, Claim and Summons to Appear for Trial</p>
+        </div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+        
+        <div class="content">
+            <form id="claimsForm" onsubmit="return false;" novalidate>
+                <!-- Section 1: Court Information -->
+                <div class="section active" data-section="1">
+                    <h2 class="section-title">Court Information</h2>
+                    <p class="section-description">Let's start with basic court information.</p>
+
+                    <div class="form-group">
+                        <label>County <span class="label-hint">(required)</span></label>
+                        <input type="text" id="county" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Court Street Address <span class="label-hint">(required)</span></label>
+                        <input type="text" id="courtStreet" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Court City <span class="label-hint">(required)</span></label>
+                        <input type="text" id="courtCity" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Court State <span class="label-hint">(required)</span></label>
+                        <input type="text" id="courtState" value="Colorado" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Court ZIP Code <span class="label-hint">(required)</span></label>
+                        <input type="text" id="courtZip" pattern="[0-9]{5}" required>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="button" class="btn-primary" onclick="window.nextPage(); return false;">Next</button>
+                    </div>
+                </div>
+
+                <!-- Section 2: Plaintiff Information -->
+                <div class="section" data-section="2">
+                    <h2 class="section-title">Your Information (Plaintiff)</h2>
+                    <p class="section-description">Please provide your contact information.</p>
+
+                    <div class="form-group">
+                        <label>Full Name <span class="label-hint">(required)</span></label>
+                        <input type="text" id="plaintiffName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Street Address <span class="label-hint">(required)</span></label>
+                        <input type="text" id="plaintiffAddress" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>City <span class="label-hint">(required)</span></label>
+                        <input type="text" id="plaintiffCity" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>State <span class="label-hint">(required)</span></label>
+                        <input type="text" id="plaintiffState" value="Colorado" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>ZIP Code <span class="label-hint">(required)</span></label>
+                        <input type="text" id="plaintiffZip" pattern="[0-9]{5}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone Numbers</label>
+                        <div class="phone-group">
+                            <input type="tel" id="plaintiffHome" placeholder="Home">
+                            <input type="tel" id="plaintiffWork" placeholder="Work">
+                            <input type="tel" id="plaintiffCell" placeholder="Cell">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Are you an attorney?</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="plaintiffAttorney" value="Yes" id="pAttorneyYes">
+                                <label for="pAttorneyYes" style="margin: 0;">Yes</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="plaintiffAttorney" value="No" id="pAttorneyNo" checked>
+                                <label for="pAttorneyNo" style="margin: 0;">No</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="button" class="btn-secondary" onclick="window.prevPage(); return false;">Back</button>
+                        <button type="button" class="btn-primary" onclick="window.nextPage(); return false;">Next</button>
+                    </div>
+                </div>
+
+                <!-- Section 3: Defendant Information -->
+                <div class="section" data-section="3">
+                    <h2 class="section-title">Defendant Information</h2>
+                    <p class="section-description">Provide information about the person or entity you're filing a claim against.</p>
+
+                    <div class="info-box">
+                        <p>You can add up to 2 defendants. For businesses, you'll need to find the registered agent information at www.coloradosos.gov.</p>
+                    </div>
+
+                    <div id="defendantsContainer">
+                        <!-- Defendant 1 -->
+                        <div class="defendant-section">
+                            <h3>Defendant 1</h3>
+                            
+                            <div class="form-group">
+                                <label>Full Name <span class="label-hint">(required)</span></label>
+                                <input type="text" id="defendant1Name" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Registered Agent Name <span class="label-hint">(if applicable for business)</span></label>
+                                <input type="text" id="defendant1Agent">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Street Address <span class="label-hint">(required)</span></label>
+                                <input type="text" id="defendant1Address" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>City <span class="label-hint">(required)</span></label>
+                                <input type="text" id="defendant1City" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>State <span class="label-hint">(required)</span></label>
+                                <input type="text" id="defendant1State" value="Colorado" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>ZIP Code <span class="label-hint">(required)</span></label>
+                                <input type="text" id="defendant1Zip" pattern="[0-9]{5}" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Phone Numbers</label>
+                                <div class="phone-group">
+                                    <input type="tel" id="defendant1Home" placeholder="Home">
+                                    <input type="tel" id="defendant1Work" placeholder="Work">
+                                    <input type="tel" id="defendant1Cell" placeholder="Cell">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Is defendant in military service?</label>
+                                <div class="radio-group">
+                                    <div class="radio-option">
+                                        <input type="radio" name="defendant1Military" value="Yes" id="d1MilYes">
+                                        <label for="d1MilYes" style="margin: 0;">Yes</label>
+                                    </div>
+                                    <div class="radio-option">
+                                        <input type="radio" name="defendant1Military" value="No" id="d1MilNo" checked>
+                                        <label for="d1MilNo" style="margin: 0;">No</label>
+                                    </div>
+                                    <div class="radio-option">
+                                        <input type="radio" name="defendant1Military" value="Unknown" id="d1MilUnknown">
+                                        <label for="d1MilUnknown" style="margin: 0;">Unknown</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="add-defendant-btn" id="addDefendantBtn">+ Add Second Defendant</button>
+
+                    <div class="form-group" style="margin-top: 30px;">
+                        <label>Defendant jurisdiction requirement:</label>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="defendantJurisdiction" required>
+                            <label for="defendantJurisdiction" style="margin: 0;">I confirm that the defendant(s) reside, are regularly employed, have an office for business, or are a student in this county, OR the claim involves real property in this county.</label>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="button" class="btn-secondary" onclick="window.prevPage(); return false;">Back</button>
+                        <button type="button" class="btn-primary" onclick="window.nextPage(); return false;">Next</button>
+                    </div>
+                </div>
+
+                <!-- Section 4: Claim Details -->
+                <div class="section" data-section="4">
+                    <h2 class="section-title">Your Claim</h2>
+                    <p class="section-description">Describe what you're claiming and why.</p>
+
+                    <div class="warning-box">
+                        <p><strong>Important:</strong> The combined value of money, property, specific performance or cost to remedy a covenant violation cannot exceed $7,500.00.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Amount Claimed <span class="label-hint">(required - numbers only, no dollar sign)</span></label>
+                        <input type="text" id="claimAmount" placeholder="Enter amount like: 1500.00 or 750" pattern="[0-9]*\.?[0-9]*" required oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
+                        <small style="color: #666; font-size: 12px; margin-top: 5px; display: block;">Enter only numbers and decimal point (examples: 1500 or 1500.00)</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description of Your Claim <span class="label-hint">(required - be specific, 100 word maximum)</span></label>
+                        <textarea id="claimDescription" required placeholder="Describe in detail:
+- What happened
+- When it happened
+- Why the defendant owes you money or should return property
+- What property is being requested (if applicable)
+- Any relevant dates, agreements, or documentation" oninput="checkWordCount(this)"></textarea>
+                        <small id="wordCount" style="color: #666; font-size: 12px; margin-top: 5px; display: block;">0 / 100 words</small>
+                    </div>
+
+                    <div class="info-box">
+                        <p>Be as detailed as possible. Include dates, amounts, and specific facts that support your claim.</p>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="button" class="btn-secondary" onclick="window.prevPage(); return false;">Back</button>
+                        <button type="button" class="btn-primary" onclick="window.nextPage(); return false;">Next</button>
+                    </div>
+                </div>
+
+                <!-- Section 5: Trial Date & Service -->
+                <div class="section" data-section="5">
+                    <h2 class="section-title">Trial Date & Service Information</h2>
+                    <p class="section-description">Important information about your trial and service requirements.</p>
+
+                    <div class="info-box">
+                        <p>The court will assign a trial date. You are responsible for serving the defendant with the notice at least 15 days before the trial.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Trial Date <span class="label-hint">(if known)</span></label>
+                        <input type="date" id="trialDate">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Trial Time <span class="label-hint">(if known)</span></label>
+                        <input type="time" id="trialTime">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Service acknowledgment:</label>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="serviceUnderstanding" required>
+                            <label for="serviceUnderstanding" style="margin: 0;">I understand it is my responsibility to have each defendant served with the "Defendant's Copy" by a person 18 years or older who is not a party to this action, at least 15 days prior to trial, and to provide the Court with written proof of service.</label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Filing declaration:</label>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="filingDeclaration" required>
+                            <label for="filingDeclaration" style="margin: 0;">I declare under penalty of perjury that I have not filed more than 2 claims in any Small Claims Court in this County during this calendar month, nor more than 18 claims in this County this calendar year.</label>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="button" class="btn-secondary" onclick="window.prevPage(); return false;">Back</button>
+                        <button type="button" class="btn-primary" onclick="window.nextPage(); return false;">Next</button>
+                    </div>
+                </div>
+
+                <!-- Section 6: Fee Waiver Question -->
+                <div class="section" data-section="6">
+                    <h2 class="section-title">Filing Fee Information</h2>
+                    <p class="section-description">Would you like to request a waiver of court filing fees?</p>
+
+                    <div class="info-box">
+                        <p><strong>Filing Fees:</strong>
+                        <br>• Claims $500 or less: $31.00
+                        <br>• Claims over $500 up to $7,500: $55.00
+                        <br><br>If you cannot afford these fees, you may request a fee waiver by completing additional forms (JDF 205 and JDF 206).</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Do you want to request a fee waiver?</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="feeWaiver" value="Yes" id="feeWaiverYes">
+                                <label for="feeWaiverYes" style="margin: 0;">Yes, I want to request a fee waiver</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="feeWaiver" value="No" id="feeWaiverNo" checked>
+                                <label for="feeWaiverNo" style="margin: 0;">No, I will pay the filing fee</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="button" class="btn-secondary" onclick="window.prevPage(); return false;">Back</button>
+                        <button type="button" class="btn-primary" onclick="window.nextPage(); return false;">Next</button>
+                    </div>
+                </div>
+
+                <!-- Section 7: Fee Waiver Details -->
+                <div class="section" data-section="7">
+                    <h2 class="section-title">Fee Waiver Application (JDF 205)</h2>
+                    <p class="section-description">Please provide information to request a fee waiver.</p>
+
+                    <div class="warning-box">
+                        <p><strong>Note:</strong> If you are incarcerated, you should use form JDF 201 instead (not included in this questionnaire).</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Date of Birth <span class="label-hint">(required)</span></label>
+                        <input type="date" id="plaintiffDOB">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Do you need an interpreter?</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="needInterpreter" value="No" id="interpreterNo" checked>
+                                <label for="interpreterNo" style="margin: 0;">No</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="needInterpreter" value="Yes" id="interpreterYes">
+                                <label for="interpreterYes" style="margin: 0;">Yes</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="interpreterLanguageGroup" style="display: none;">
+                        <label>Language needed:</label>
+                        <input type="text" id="interpreterLanguage">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Social Status <span class="label-hint">(required)</span></label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="socialStatus" value="Single" id="statusSingle">
+                                <label for="statusSingle" style="margin: 0;">Single</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="socialStatus" value="Married/Civil Union" id="statusMarried">
+                                <label for="statusMarried" style="margin: 0;">Married/Civil Union</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="socialStatus" value="Divorced" id="statusDivorced">
+                                <label for="statusDivorced" style="margin: 0;">Divorced</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="socialStatus" value="Separated" id="statusSeparated">
+                                <label for="statusSeparated" style="margin: 0;">Separated</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="socialStatus" value="Widowed" id="statusWidowed">
+                                <label for="statusWidowed" style="margin: 0;">Widowed</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h3 style="margin-top: 30px; margin-bottom: 15px;">Automatic Qualification</h3>
+                    <div class="info-box">
+                        <p>If you are enrolled in any of these programs, you automatically qualify for a fee waiver and can skip most financial questions.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Are you enrolled in any of these programs?</label>
+                        <div class="checkbox-group" style="display: block; background: transparent; padding: 0;">
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="programAidBlind">
+                                <label for="programAidBlind" style="margin: 0;">Aid to the Blind Colorado</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="programOldAgePension">
+                                <label for="programOldAgePension" style="margin: 0;">Old Age Pension – A and B</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="programSSI">
+                                <label for="programSSI" style="margin: 0;">Supplemental Security Income (SSI)</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="programTANF">
+                                <label for="programTANF" style="margin: 0;">Temporary Aid for Needy Families (TANF)</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="programSNAP">
+                                <label for="programSNAP" style="margin: 0;">Supplemental Nutrition Assistance Program (SNAP)</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="programAND">
+                                <label for="programAND" style="margin: 0;">Aid to the Needy and Disabled (AND)</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="programNone">
+                                <label for="programNone" style="margin: 0;">None of the above (I need to provide financial information)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="financialDetailsSection">
+                        <h3 style="margin-top: 30px; margin-bottom: 15px;">Home and Employment</h3>
+
+                        <div class="form-group">
+                            <label>Do you own or rent your home?</label>
+                            <div class="radio-group">
+                                <div class="radio-option">
+                                    <input type="radio" name="homeOwnership" value="Own" id="homeOwn">
+                                    <label for="homeOwn" style="margin: 0;">Own</label>
+                                </div>
+                                <div class="radio-option">
+                                    <input type="radio" name="homeOwnership" value="Rent" id="homeRent">
+                                    <label for="homeRent" style="margin: 0;">Rent</label>
+                                </div>
+                                <div class="radio-option">
+                                    <input type="radio" name="homeOwnership" value="Other" id="homeOther">
+                                    <label for="homeOther" style="margin: 0;">Other</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group" id="homeOtherGroup" style="display: none;">
+                            <label>Please specify:</label>
+                            <input type="text" id="homeOtherDesc">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Do you currently have a job?</label>
+                            <div class="radio-group">
+                                <div class="radio-option">
+                                    <input type="radio" name="currentlyEmployed" value="Yes" id="employedYes">
+                                    <label for="employedYes" style="margin: 0;">Yes</label>
+                                </div>
+                                <div class="radio-option">
+                                    <input type="radio" name="currentlyEmployed" value="No" id="employedNo">
+                                    <label for="employedNo" style="margin: 0;">No</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="employedFields" style="display: none;">
+                            <div class="form-group">
+                                <label>Pay rate:</label>
+                                <div style="display: flex; gap: 10px; align-items: center;">
+                                    <span>$</span>
+                                    <input type="text" id="payRate" style="width: 150px;" oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
+                                    <span>per</span>
+                                    <select id="payPeriod" style="width: 150px;">
+                                        <option value="Hour">Hour</option>
+                                        <option value="Month">Month</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>How often do you get paid? <span class="label-hint">(e.g., weekly, bi-weekly, monthly)</span></label>
+                                <input type="text" id="payFrequency">
+                            </div>
+                        </div>
+
+                        <div id="unemployedFields" style="display: none;">
+                            <div class="form-group">
+                                <label>Date of last paycheck:</label>
+                                <input type="date" id="lastPaycheck">
+                            </div>
+                        </div>
+
+                        <h3 style="margin-top: 30px; margin-bottom: 15px;">Household Information</h3>
+
+                        <div class="form-group">
+                            <label>How many people live in your home? <span class="label-hint">(include yourself)</span></label>
+                            <input type="number" id="householdSize" min="1" value="1">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Household members <span class="label-hint">(you can add details about other household members)</span></label>
+                            <textarea id="householdMembers" rows="3" placeholder="Example:&#10;John Doe, Age 42, Spouse, Yes (dependent)&#10;Jane Doe, Age 16, Daughter, Yes (dependent)"></textarea>
+                        </div>
+
+                        <h3 style="margin-top: 30px; margin-bottom: 15px;">Monthly Income</h3>
+                        <div class="info-box">
+                            <p><strong>Do NOT include:</strong> Child support, TANF, VA benefits, or food stamps. Do NOT include roommates' income unless you share bank accounts.</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Your wages/commission/tips:</label>
+                            <input type="text" id="incomeWages" placeholder="0.00" oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Income of household members:</label>
+                            <input type="text" id="incomeHousehold" placeholder="0.00" oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Unemployment benefits:</label>
+                            <input type="text" id="incomeUnemployment" placeholder="0.00" oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Retirement funds:</label>
+                            <input type="text" id="incomeRetirement" placeholder="0.00" oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Spousal support you receive:</label>
+                            <input type="text" id="incomeSpousal" placeholder="0.00" oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Other income (specify):</label>
+                            <input type="text" id="incomeOther1" placeholder="0.00" oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
+                        </div>
+
+                        <h3 style="margin-top: 30px; margin-bottom: 15px;">Monthly Expenses</h3>
+                        <div class="info-box">
+                            <p><strong>Exclude:</strong> Roommates' share of bills (unless you share bank accounts).</p>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Rent/Mortgage:</label>
+                            <input type="text" id="expenseRent" placeholder="0.00" oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Groceries (above food stamps):</label>
+                            <input type="text" id="expenseGroceries" placeholder="0.00" oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Utilities:</label>
+                            <input type="text" id="expenseUtilities" placeholder="0.00" oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Child/Spousal support you pay:</label>
+                            <input type="text" id="expenseSupport" placeholder="0.00" oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Medical and dental costs:</label>
+                            <input type="text" id="expenseMedical" placeholder="0.00" oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Transportation costs (car, insurance):</label>
+                            <input type="text" id="expenseTransport" placeholder="0.00" oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Student loans and credit cards:</label>
+                            <input type="text" id="expenseDebt" placeholder="0.00" oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
+                        </div>
+
+                        <div class="form-group">
+                            <label>If your income is less than expenses, how do you pay the bills?</label>
+                            <textarea id="expenseExplanation" rows="2"></textarea>
+                        </div>
+
+                        <h3 style="margin-top: 30px; margin-bottom: 15px;">Household Assets</h3>
+
+                        <div class="form-group">
+                            <label>Cash (with you or at home):</label>
+                            <input type="text" id="assetCash" placeholder="0.00" oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Savings account balance:</label>
+                            <input type="text" id="assetSavings" placeholder="0.00" oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Savings bank name:</label>
+                            <input type="text" id="assetSavingsBank">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Checking account balance:</label>
+                            <input type="text" id="assetChecking" placeholder="0.00" oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Checking bank name:</label>
+                            <input type="text" id="assetCheckingBank">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Cars, boats, or RVs (description and value):</label>
+                            <textarea id="assetVehicles" rows="2" placeholder="Example: 2015 Honda Civic, valued at $8,000, owe $3,000"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Homes and land (description and value):</label>
+                            <textarea id="assetProperty" rows="2"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Other property (description and value):</label>
+                            <textarea id="assetOtherProperty" rows="2"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Stocks, bonds, jewelry and other valuables:</label>
+                            <textarea id="assetValuables" rows="2"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Any other investments:</label>
+                            <textarea id="assetInvestments" rows="2"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Anything else you want the court to know about your financial situation?</label>
+                            <textarea id="additionalFinancialInfo" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="button" class="btn-secondary" onclick="window.prevPage(); return false;">Back</button>
+                        <button type="button" class="btn-primary" onclick="window.nextPage(); return false;">Next</button>
+                    </div>
+                </div>
+
+                <!-- Section 8: Review & Submit -->
+                <div class="section" data-section="8">
+                    <h2 class="section-title">Review Your Information</h2>
+                    <p class="section-description">Please review all information before generating your form.</p>
+
+                    <div id="summaryContainer"></div>
+
+                    <div class="warning-box">
+                        <p><strong>Next Steps:</strong> After generating forms, you will need to:
+                        <br>1. Print all copies (the forms will open in a new tab)
+                        <br>2. File the forms with the court and pay the filing fee (unless waived)
+                        <br>3. Serve the defendant with their copy at least 15 days before trial
+                        <br>4. Keep your plaintiff's copy for your records</p>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="button" class="btn-secondary" onclick="window.prevPage(); return false;">Back</button>
+                        <button type="button" class="btn-success" onclick="generateForm(); return false;">Generate Forms (Opens in New Tab)</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentSection = 1;
+        const totalSections = 8;
+        let defendant2Added = false;
+        let requestFeeWaiver = false;
+        
+        console.log('Script loaded! Current section:', currentSection);
+        
+        // Wait for DOM to be ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function() {
+                console.log('DOM loaded via event listener');
+                initializePage();
+            });
+        } else {
+            console.log('DOM already loaded');
+            initializePage();
+        }
+        
+        function initializePage() {
+            console.log('Initializing page...');
+            attachButtonHandlers();
+            updateProgress();
+            setupConditionalFields();
+        }
+        
+        function attachButtonHandlers() {
+            // Find all buttons and attach handlers
+            const buttons = document.querySelectorAll('button');
+            console.log('Attaching handlers to', buttons.length, 'buttons');
+            
+            buttons.forEach(function(button, index) {
+                const text = button.textContent.trim();
+                console.log('Button', index, ':', text);
+                
+                if (text === 'Next' || text.includes('Next')) {
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Next button clicked!');
+                        handleNext();
+                        return false;
+                    }, false);
+                    button.addEventListener('touchend', function(e) {
+                        e.preventDefault();
+                        console.log('Next button touched!');
+                        handleNext();
+                        return false;
+                    }, false);
+                } else if (text === 'Back' || text.includes('Back')) {
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Back button clicked');
+                        handleBack();
+                        return false;
+                    }, false);
+                } else if (text.includes('Generate')) {
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log('Generate button clicked');
+                        generateForm();
+                        return false;
+                    }, false);
+                } else if (text.includes('Add Second Defendant')) {
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        addDefendant2();
+                        return false;
+                    }, false);
+                } else if (text.includes('Remove Defendant')) {
+                    button.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        removeDefendant2();
+                        return false;
+                    }, false);
+                }
+            });
+            
+            console.log('Button handlers attached');
+        }
+        
+        function setupConditionalFields() {
+            // Event listeners for conditional fields will be set up here
+            console.log('Setting up conditional fields');
+        }
+        
+        function handleNext() {
+            console.log('handleNext called, section:', currentSection);
+            
+            // Simple validation - just check if required fields have values
+            const currentSectionEl = document.querySelector('.section.active');
+            if (!currentSectionEl) {
+                console.error('No active section found');
+                return;
+            }
+            
+            const requiredInputs = currentSectionEl.querySelectorAll('input[required]:not([type="radio"]):not([type="checkbox"]), textarea[required]');
+            console.log('Required inputs:', requiredInputs.length);
+            
+            for (let i = 0; i < requiredInputs.length; i++) {
+                const input = requiredInputs[i];
+                if (!input.value || input.value.trim() === '') {
+                    alert('Please fill in all required fields');
+                    input.focus();
+                    return;
+                }
+            }
+            
+            // Check required checkboxes
+            const requiredCheckboxes = currentSectionEl.querySelectorAll('input[type="checkbox"][required]');
+            for (let i = 0; i < requiredCheckboxes.length; i++) {
+                if (!requiredCheckboxes[i].checked) {
+                    alert('Please check all required boxes');
+                    return;
+                }
+            }
+            
+            console.log('Validation passed');
+            
+            // Special handling for section 5
+            if (currentSection === 5) {
+                generateSummary();
+            }
+            
+            // Special handling for section 6 (Fee Waiver)
+            if (currentSection === 6) {
+                const feeWaiverYes = document.getElementById('feeWaiverYes');
+                requestFeeWaiver = feeWaiverYes && feeWaiverYes.checked;
+                console.log('Fee waiver:', requestFeeWaiver);
+                
+                if (!requestFeeWaiver) {
+                    generateSummary();
+                    showSection(8);
+                    return;
+                }
+            }
+            
+            // Special handling for section 7
+            if (currentSection === 7) {
+                generateSummary();
+                showSection(8);
+                return;
+            }
+            
+            // Normal progression
+            if (currentSection < totalSections) {
+                showSection(currentSection + 1);
+            }
+        }
+        
+        function handleBack() {
+            console.log('handleBack called, section:', currentSection);
+            
+            if (currentSection > 1) {
+                if (currentSection === 8 && !requestFeeWaiver) {
+                    showSection(6);
+                } else {
+                    showSection(currentSection - 1);
+                }
+            }
+        }
+
+        function updateProgress() {
+            const progress = (currentSection / totalSections) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function showSection(sectionNum) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelector(`.section[data-section="${sectionNum}"]`).classList.add('active');
+            currentSection = sectionNum;
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function addDefendant2() {
+            if (defendant2Added) return;
+            
+            const container = document.getElementById('defendantsContainer');
+            const defendant2HTML = `
+                <div class="defendant-section" id="defendant2Section">
+                    <h3>Defendant 2</h3>
+                    
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="defendant2Name">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Registered Agent Name <span class="label-hint">(if applicable for business)</span></label>
+                        <input type="text" id="defendant2Agent">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Street Address</label>
+                        <input type="text" id="defendant2Address">
+                    </div>
+
+                    <div class="form-group">
+                        <label>City</label>
+                        <input type="text" id="defendant2City">
+                    </div>
+
+                    <div class="form-group">
+                        <label>State</label>
+                        <input type="text" id="defendant2State" value="Colorado">
+                    </div>
+
+                    <div class="form-group">
+                        <label>ZIP Code</label>
+                        <input type="text" id="defendant2Zip" pattern="[0-9]{5}">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone Numbers</label>
+                        <div class="phone-group">
+                            <input type="tel" id="defendant2Home" placeholder="Home">
+                            <input type="tel" id="defendant2Work" placeholder="Work">
+                            <input type="tel" id="defendant2Cell" placeholder="Cell">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Is defendant in military service?</label>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="defendant2Military" value="Yes" id="d2MilYes">
+                                <label for="d2MilYes" style="margin: 0;">Yes</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="defendant2Military" value="No" id="d2MilNo" checked>
+                                <label for="d2MilNo" style="margin: 0;">No</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="defendant2Military" value="Unknown" id="d2MilUnknown">
+                                <label for="d2MilUnknown" style="margin: 0;">Unknown</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="button" class="btn-secondary" style="width: auto; margin-top: 10px;">Remove Defendant 2</button>
+                </div>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', defendant2HTML);
+            document.getElementById('addDefendantBtn').style.display = 'none';
+            defendant2Added = true;
+        }
+
+        function removeDefendant2() {
+            document.getElementById('defendant2Section').remove();
+            document.getElementById('addDefendantBtn').style.display = 'block';
+            defendant2Added = false;
+            return false;
+        }
+
+        // Word count function for claim description
+        function checkWordCount(textarea) {
+            var text = textarea.value.trim();
+            var words = text ? text.split(/\s+/).filter(function(word) { return word.length > 0; }) : [];
+            var wordCount = words.length;
+            var counter = document.getElementById('wordCount');
+            
+            if (counter) {
+                counter.textContent = wordCount + ' / 100 words';
+                
+                if (wordCount > 100) {
+                    counter.style.color = '#dc2626';
+                    counter.style.fontWeight = 'bold';
+                    // Trim to 100 words
+                    var trimmedWords = words.slice(0, 100);
+                    textarea.value = trimmedWords.join(' ');
+                    counter.textContent = '100 / 100 words (maximum reached)';
+                } else if (wordCount > 90) {
+                    counter.style.color = '#f59e0b';
+                } else {
+                    counter.style.color = '#666';
+                    counter.style.fontWeight = 'normal';
+                }
+            }
+        }
+        
+        function generateSummary() {
+            const summaryContainer = document.getElementById('summaryContainer');
+            
+            const formData = {
+                county: document.getElementById('county').value,
+                courtStreet: document.getElementById('courtStreet').value,
+                courtCity: document.getElementById('courtCity').value,
+                courtState: document.getElementById('courtState').value,
+                courtZip: document.getElementById('courtZip').value,
+                plaintiffName: document.getElementById('plaintiffName').value,
+                plaintiffAddress: document.getElementById('plaintiffAddress').value,
+                plaintiffCity: document.getElementById('plaintiffCity').value,
+                plaintiffState: document.getElementById('plaintiffState').value,
+                plaintiffZip: document.getElementById('plaintiffZip').value,
+                defendant1Name: document.getElementById('defendant1Name').value,
+                defendant1Address: document.getElementById('defendant1Address').value,
+                claimAmount: document.getElementById('claimAmount').value,
+                claimDescription: document.getElementById('claimDescription').value,
+                trialDate: document.getElementById('trialDate').value || 'To be determined',
+                trialTime: document.getElementById('trialTime').value || 'To be determined'
+            };
+
+            let summaryHTML = `
+                <div class="summary">
+                    <h3>Court Information</h3>
+                    <div class="summary-item">
+                        <div class="summary-label">County:</div>
+                        <div class="summary-value">${formData.county}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Court Address:</div>
+                        <div class="summary-value">${formData.courtStreet}, ${formData.courtCity}, ${formData.courtState} ${formData.courtZip}</div>
+                    </div>
+                </div>
+
+                <div class="summary">
+                    <h3>Plaintiff Information</h3>
+                    <div class="summary-item">
+                        <div class="summary-label">Name:</div>
+                        <div class="summary-value">${formData.plaintiffName}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Address:</div>
+                        <div class="summary-value">${formData.plaintiffAddress}, ${formData.plaintiffCity}, ${formData.plaintiffState} ${formData.plaintiffZip}</div>
+                    </div>
+                </div>
+
+                <div class="summary">
+                    <h3>Defendant Information</h3>
+                    <div class="summary-item">
+                        <div class="summary-label">Name:</div>
+                        <div class="summary-value">${formData.defendant1Name}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Address:</div>
+                        <div class="summary-value">${formData.defendant1Address}</div>
+                    </div>
+                </div>
+
+                <div class="summary">
+                    <h3>Claim Information</h3>
+                    <div class="summary-item">
+                        <div class="summary-label">Amount:</div>
+                        <div class="summary-value">$${formData.claimAmount}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Description:</div>
+                        <div class="summary-value">${formData.claimDescription}</div>
+                    </div>
+                </div>
+
+                <div class="summary">
+                    <h3>Trial Information</h3>
+                    <div class="summary-item">
+                        <div class="summary-label">Date:</div>
+                        <div class="summary-value">${formData.trialDate}</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-label">Time:</div>
+                        <div class="summary-value">${formData.trialTime}</div>
+                    </div>
+                </div>
+
+                <div class="summary">
+                    <h3>Fee Waiver</h3>
+                    <div class="summary-item">
+                        <div class="summary-label">Requesting Fee Waiver:</div>
+                        <div class="summary-value">${requestFeeWaiver ? 'Yes (JDF 205 and JDF 206 will be included)' : 'No'}</div>
+                    </div>
+                </div>
+            `;
+
+            summaryContainer.innerHTML = summaryHTML;
+        }
+
+        function generateForm() {
+            // Collect all form data
+            const data = {
+                county: document.getElementById('county').value,
+                courtStreet: document.getElementById('courtStreet').value,
+                courtCity: document.getElementById('courtCity').value,
+                courtState: document.getElementById('courtState').value,
+                courtZip: document.getElementById('courtZip').value,
+                plaintiffName: document.getElementById('plaintiffName').value,
+                plaintiffDOB: document.getElementById('plaintiffDOB').value,
+                plaintiffAddress: document.getElementById('plaintiffAddress').value,
+                plaintiffCity: document.getElementById('plaintiffCity').value,
+                plaintiffState: document.getElementById('plaintiffState').value,
+                plaintiffZip: document.getElementById('plaintiffZip').value,
+                plaintiffHome: document.getElementById('plaintiffHome').value,
+                plaintiffWork: document.getElementById('plaintiffWork').value,
+                plaintiffCell: document.getElementById('plaintiffCell').value,
+                plaintiffAttorney: document.querySelector('input[name="plaintiffAttorney"]:checked').value,
+                defendant1Name: document.getElementById('defendant1Name').value,
+                defendant1Agent: document.getElementById('defendant1Agent').value,
+                defendant1Address: document.getElementById('defendant1Address').value,
+                defendant1City: document.getElementById('defendant1City').value,
+                defendant1State: document.getElementById('defendant1State').value,
+                defendant1Zip: document.getElementById('defendant1Zip').value,
+                defendant1Home: document.getElementById('defendant1Home').value,
+                defendant1Work: document.getElementById('defendant1Work').value,
+                defendant1Cell: document.getElementById('defendant1Cell').value,
+                defendant1Military: document.querySelector('input[name="defendant1Military"]:checked').value,
+                claimAmount: document.getElementById('claimAmount').value,
+                claimDescription: document.getElementById('claimDescription').value,
+                trialDate: document.getElementById('trialDate').value,
+                trialTime: document.getElementById('trialTime').value
+            };
+
+            // Check for defendant 2
+            const defendant2NameEl = document.getElementById('defendant2Name');
+            if (defendant2NameEl && defendant2NameEl.value) {
+                data.defendant2Name = defendant2NameEl.value;
+                data.defendant2Agent = document.getElementById('defendant2Agent').value;
+                data.defendant2Address = document.getElementById('defendant2Address').value;
+                data.defendant2City = document.getElementById('defendant2City').value;
+                data.defendant2State = document.getElementById('defendant2State').value;
+                data.defendant2Zip = document.getElementById('defendant2Zip').value;
+                data.defendant2Home = document.getElementById('defendant2Home').value;
+                data.defendant2Work = document.getElementById('defendant2Work').value;
+                data.defendant2Cell = document.getElementById('defendant2Cell').value;
+                data.defendant2Military = document.querySelector('input[name="defendant2Military"]:checked').value;
+            }
+
+            // Check for fee waiver request
+            data.requestFeeWaiver = requestFeeWaiver;
+            
+            if (requestFeeWaiver) {
+                // Collect fee waiver data
+                const needInterpreterChecked = document.querySelector('input[name="needInterpreter"]:checked');
+                data.feeWaiver = {
+                    needInterpreter: needInterpreterChecked ? needInterpreterChecked.value : 'No',
+                    interpreterLanguage: document.getElementById('interpreterLanguage').value || '',
+                    socialStatus: document.querySelector('input[name="socialStatus"]:checked')?.value || '',
+                    
+                    // Programs
+                    programAidBlind: document.getElementById('programAidBlind').checked,
+                    programOldAgePension: document.getElementById('programOldAgePension').checked,
+                    programSSI: document.getElementById('programSSI').checked,
+                    programTANF: document.getElementById('programTANF').checked,
+                    programSNAP: document.getElementById('programSNAP').checked,
+                    programAND: document.getElementById('programAND').checked,
+                    
+                    // Home and employment
+                    homeOwnership: document.querySelector('input[name="homeOwnership"]:checked')?.value || '',
+                    homeOtherDesc: document.getElementById('homeOtherDesc').value || '',
+                    currentlyEmployed: document.querySelector('input[name="currentlyEmployed"]:checked')?.value || '',
+                    payRate: document.getElementById('payRate').value || '',
+                    payPeriod: document.getElementById('payPeriod').value || '',
+                    payFrequency: document.getElementById('payFrequency').value || '',
+                    lastPaycheck: document.getElementById('lastPaycheck').value || '',
+                    
+                    // Household
+                    householdSize: document.getElementById('householdSize').value || '1',
+                    householdMembers: document.getElementById('householdMembers').value || '',
+                    
+                    // Income
+                    incomeWages: document.getElementById('incomeWages').value || '0',
+                    incomeHousehold: document.getElementById('incomeHousehold').value || '0',
+                    incomeUnemployment: document.getElementById('incomeUnemployment').value || '0',
+                    incomeRetirement: document.getElementById('incomeRetirement').value || '0',
+                    incomeSpousal: document.getElementById('incomeSpousal').value || '0',
+                    incomeOther1: document.getElementById('incomeOther1').value || '0',
+                    
+                    // Expenses
+                    expenseRent: document.getElementById('expenseRent').value || '0',
+                    expenseGroceries: document.getElementById('expenseGroceries').value || '0',
+                    expenseUtilities: document.getElementById('expenseUtilities').value || '0',
+                    expenseSupport: document.getElementById('expenseSupport').value || '0',
+                    expenseMedical: document.getElementById('expenseMedical').value || '0',
+                    expenseTransport: document.getElementById('expenseTransport').value || '0',
+                    expenseDebt: document.getElementById('expenseDebt').value || '0',
+                    expenseExplanation: document.getElementById('expenseExplanation').value || '',
+                    
+                    // Assets
+                    assetCash: document.getElementById('assetCash').value || '0',
+                    assetSavings: document.getElementById('assetSavings').value || '0',
+                    assetSavingsBank: document.getElementById('assetSavingsBank').value || '',
+                    assetChecking: document.getElementById('assetChecking').value || '0',
+                    assetCheckingBank: document.getElementById('assetCheckingBank').value || '',
+                    assetVehicles: document.getElementById('assetVehicles').value || '',
+                    assetProperty: document.getElementById('assetProperty').value || '',
+                    assetOtherProperty: document.getElementById('assetOtherProperty').value || '',
+                    assetValuables: document.getElementById('assetValuables').value || '',
+                    assetInvestments: document.getElementById('assetInvestments').value || '',
+                    additionalFinancialInfo: document.getElementById('additionalFinancialInfo').value || ''
+                };
+            }
+
+            // Create printable form
+            createPrintableForm(data);
+        }
+
+        function generateJDF205(data) {
+            const fw = data.feeWaiver;
+            const today = new Date().toLocaleDateString();
+            const hasPrograms = fw.programAidBlind || fw.programOldAgePension || fw.programSSI || fw.programTANF || fw.programSNAP || fw.programAND;
+            
+            // Calculate totals
+            const totalIncome = parseFloat(fw.incomeWages || 0) + parseFloat(fw.incomeHousehold || 0) + parseFloat(fw.incomeUnemployment || 0) + parseFloat(fw.incomeRetirement || 0) + parseFloat(fw.incomeSpousal || 0) + parseFloat(fw.incomeOther1 || 0);
+            const totalExpenses = parseFloat(fw.expenseRent || 0) + parseFloat(fw.expenseGroceries || 0) + parseFloat(fw.expenseUtilities || 0) + parseFloat(fw.expenseSupport || 0) + parseFloat(fw.expenseMedical || 0) + parseFloat(fw.expenseTransport || 0) + parseFloat(fw.expenseDebt || 0);
+            
+            return `
+    <!-- JDF 205 - Motion to Waive Fees -->
+    <div class="page">
+        <div style="border: 2px solid #000; padding: 10px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-weight: bold; font-size: 18pt;">JDF 205</div>
+                <div style="font-weight: bold; font-size: 16pt;">Motion to Waive Fees</div>
+                <div style="text-align: right; font-size: 10pt;">Clerk's Event Code: MIFP</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="field-label">1. Case Number:</div>
+            <div class="field-value">___________________________</div>
+        </div>
+
+        <div class="section">
+            <div class="field-label">2. Case filed in: (county)</div>
+            <div class="field-value">${data.county}</div>
+        </div>
+
+        <div class="section">
+            <strong>3. Background</strong>
+            <p style="margin: 10px 0;">I request that court fees be waived under C.R.S. § 13-16-103 and C.J.D. 98-01.</p>
+            <div class="info-box">
+                <strong>This form is not for everyone:</strong>
+                <ul style="margin-left: 20px;">
+                    <li>If you are incarcerated, use form JDF 201 instead.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <strong>4. My Information</strong>
+            <div class="field-label">Full Legal Name:</div>
+            <div class="field-value">${data.plaintiffName}</div>
+            
+            <div class="field-label">Do you need an interpreter?</div>
+            <div class="field-value">
+                <span class="checkbox">${fw.needInterpreter === 'No' ? '✓' : ''}</span> No. 
+                <span class="checkbox">${fw.needInterpreter === 'Yes' ? '✓' : ''}</span> Yes, in ${fw.interpreterLanguage || '___________'}
+            </div>
+            
+            <div class="field-label">Date of Birth: (DD/MM/YYYY)</div>
+            <div class="field-value">${data.plaintiffDOB ? new Date(data.plaintiffDOB).toLocaleDateString('en-GB') : '_______________'}</div>
+            
+            <div class="field-label">Date of Birth: (DD/MM/YYYY)</div>
+            <div class="field-value">___/___/_____</div>
+            
+            <div class="field-label">Social Status:</div>
+            <div class="field-value">
+                <span class="checkbox">${fw.socialStatus === 'Single' ? '✓' : ''}</span> Single. 
+                <span class="checkbox">${fw.socialStatus === 'Married/Civil Union' ? '✓' : ''}</span> Married/Civil Union. 
+                <span class="checkbox">${fw.socialStatus === 'Divorced' ? '✓' : ''}</span> Divorced. 
+                <span class="checkbox">${fw.socialStatus === 'Separated' ? '✓' : ''}</span> Separated. 
+                <span class="checkbox">${fw.socialStatus === 'Widowed' ? '✓' : ''}</span> Widowed.
+            </div>
+            
+            <div class="field-label">Mailing Address:</div>
+            <div class="field-value">${data.plaintiffAddress}</div>
+            <div class="field-label">City: State: Zip:</div>
+            <div class="field-value">${data.plaintiffCity}, ${data.plaintiffState} ${data.plaintiffZip}</div>
+            <div class="field-label">Phone: Email:</div>
+            <div class="field-value">Phone: ${data.plaintiffHome || data.plaintiffCell || data.plaintiffWork || '___________'} Email: ___________</div>
+        </div>
+
+        <div class="section">
+            <strong>5. Fees Waived</strong>
+            <p style="margin: 10px 0;">If the Court determines you qualify (found indigent), the following fees may be waived:</p>
+            <ul style="margin-left: 20px;">
+                <li>Filing Fees.</li>
+                <li>Reasonable Copy Fees.</li>
+                <li>Jury Fees.</li>
+                <li>eFiling and eService Fees (when available).</li>
+                <li>Form and Instruction fees.</li>
+            </ul>
+            <p style="font-size: 10pt; margin-top: 10px;"><strong>Note:</strong> The Court can only waive its fees. Outside fees, like transcript costs, can't be waived.</p>
+        </div>
+
+        <div class="section">
+            <strong>6. Automatic Qualification</strong>
+            <p style="margin: 10px 0;">Are you enrolled in one of these programs? 
+                <span class="checkbox">${!hasPrograms ? '✓' : ''}</span> No. [Go to Section 7]
+                <span class="checkbox">${hasPrograms ? '✓' : ''}</span> Yes: (check all that apply)
+            </p>
+            
+            <div style="margin-left: 20px;">
+                <div><span class="checkbox">${fw.programAidBlind ? '✓' : ''}</span> Aid to the Blind Colorado</div>
+                <div><span class="checkbox">${fw.programOldAgePension ? '✓' : ''}</span> Old Age Pension – A and B</div>
+                <div><span class="checkbox">${fw.programSSI ? '✓' : ''}</span> Supp. Security Income (SSI)</div>
+                <div><span class="checkbox">${fw.programTANF ? '✓' : ''}</span> Temporary Aid for Needy Families (TANF)</div>
+                <div><span class="checkbox">${fw.programSNAP ? '✓' : ''}</span> Supp. Nutrition Assistance Program (SNAP)</div>
+                <div><span class="checkbox">${fw.programAND ? '✓' : ''}</span> Aid to the Needy and Disabled (AND)</div>
+            </div>
+            
+            ${hasPrograms ? '<p style="margin-top: 10px;"><em>Then, leave Sections 7 through 10 blank. [Skip to Section 11]</em></p>' : ''}
+        </div>
+    </div>
+
+    <!-- JDF 205 Page 2 -->
+    <div class="page">
+        <div class="form-number">JDF 205 – Motion to Waive Fees R: April 2, 2024 Page 2 of 3</div>
+        
+        <div class="section">
+            <strong>7. Home and Work</strong>
+            <div class="field-label">Do you own or rent your home?</div>
+            <div class="field-value">
+                <span class="checkbox">${fw.homeOwnership === 'Own' ? '✓' : ''}</span> Own 
+                <span class="checkbox">${fw.homeOwnership === 'Rent' ? '✓' : ''}</span> Rent 
+                <span class="checkbox">${fw.homeOwnership === 'Other' ? '✓' : ''}</span> Other: ${fw.homeOtherDesc || '___________'}
+            </div>
+            
+            <div class="field-label">Do you have a job now?</div>
+            <div class="field-value">
+                <span class="checkbox">${fw.currentlyEmployed === 'No' ? '✓' : ''}</span> No. 
+                <span class="checkbox">${fw.currentlyEmployed === 'Yes' ? '✓' : ''}</span> Yes.
+            </div>
+            
+            ${fw.currentlyEmployed === 'No' ? `
+            <div class="field-label">If No, List the date of your last paycheck: (mm/dd/yyyy)</div>
+            <div class="field-value">${fw.lastPaycheck || '___/___/_____'}</div>
+            ` : ''}
+            
+            ${fw.currentlyEmployed === 'Yes' ? `
+            <div class="field-label">If Yes, My pay rate is:</div>
+            <div class="field-value">$ ${fw.payRate || '___________'} per <span class="checkbox">${fw.payPeriod === 'Hour' ? '✓' : ''}</span> Hour <span class="checkbox">${fw.payPeriod === 'Month' ? '✓' : ''}</span> Month.</div>
+            <div class="field-label">How often do you get paid?</div>
+            <div class="field-value">${fw.payFrequency || '___________'}</div>
+            ` : ''}
+        </div>
+
+        <div class="section">
+            <strong>8. Household</strong>
+            <div class="field-label">How many people live in your home? (include yourself)</div>
+            <div class="field-value">${fw.householdSize}</div>
+            
+            ${fw.householdMembers ? `
+            <div class="field-label">Household Members:</div>
+            <div class="field-value" style="white-space: pre-wrap;">${fw.householdMembers}</div>
+            ` : ''}
+        </div>
+
+        <div class="section">
+            <strong>9. Household Income and Expenses</strong>
+            
+            <table style="width: 100%; margin: 15px 0;">
+                <tr>
+                    <td style="width: 50%; vertical-align: top;">
+                        <strong>Monthly Income</strong>
+                        <table style="width: 100%; margin-top: 10px;">
+                            <tr><td>a. Mine (wages/commission/tips)</td><td style="text-align: right;">$${fw.incomeWages}</td></tr>
+                            <tr><td>b. Of household members</td><td style="text-align: right;">$${fw.incomeHousehold}</td></tr>
+                            <tr><td>c. Unemployment benefits</td><td style="text-align: right;">$${fw.incomeUnemployment}</td></tr>
+                            <tr><td>d. From your retirement funds</td><td style="text-align: right;">$${fw.incomeRetirement}</td></tr>
+                            <tr><td>e. Spousal Support you get</td><td style="text-align: right;">$${fw.incomeSpousal}</td></tr>
+                            <tr><td>f. Other</td><td style="text-align: right;">$${fw.incomeOther1}</td></tr>
+                            <tr style="font-weight: bold; border-top: 2px solid #000;"><td>Total Monthly Income</td><td style="text-align: right;">$${totalIncome.toFixed(2)}</td></tr>
+                        </table>
+                    </td>
+                    <td style="width: 50%; vertical-align: top;">
+                        <strong>Monthly Expenses</strong>
+                        <table style="width: 100%; margin-top: 10px;">
+                            <tr><td>a. Rent/Mortgage</td><td style="text-align: right;">$${fw.expenseRent}</td></tr>
+                            <tr><td>b. Groceries (above food stamps)</td><td style="text-align: right;">$${fw.expenseGroceries}</td></tr>
+                            <tr><td>c. Utilities</td><td style="text-align: right;">$${fw.expenseUtilities}</td></tr>
+                            <tr><td>d. Child/Spousal support you pay</td><td style="text-align: right;">$${fw.expenseSupport}</td></tr>
+                            <tr><td>e. Medical and dental costs</td><td style="text-align: right;">$${fw.expenseMedical}</td></tr>
+                            <tr><td>f. Transport costs (car, insurance)</td><td style="text-align: right;">$${fw.expenseTransport}</td></tr>
+                            <tr><td>g. Student loans and credit cards</td><td style="text-align: right;">$${fw.expenseDebt}</td></tr>
+                            <tr style="font-weight: bold; border-top: 2px solid #000;"><td>Total Monthly Expenses</td><td style="text-align: right;">$${totalExpenses.toFixed(2)}</td></tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            
+            <div class="info-box" style="font-size: 10pt;">
+                <strong>What Not to Include</strong>
+                <ul style="margin-left: 20px;">
+                    <li>Don't include child support, TANF, VA benefits, or food stamps as income.</li>
+                    <li>Don't include roommates' income.</li>
+                    <li>Exclude roommates' share of the bills in monthly expenses.</li>
+                    <li>Roommate Exception: If you share bank accounts or comingle funds.</li>
+                </ul>
+            </div>
+            
+            ${fw.expenseExplanation ? `
+            <div class="field-label">How do you pay the bills if your income is less than your expenses?</div>
+            <div class="field-value" style="white-space: pre-wrap;">${fw.expenseExplanation}</div>
+            ` : ''}
+        </div>
+    </div>
+
+    <!-- JDF 205 Page 3 -->
+    <div class="page">
+        <div class="form-number">JDF 205 – Motion to Waive Fees R: April 2, 2024 Page 3 of 3</div>
+        
+        <div class="section">
+            <strong>10. Household Assets</strong>
+            
+            <table style="width: 100%; margin: 15px 0; border-collapse: collapse;">
+                <tr style="border-bottom: 1px solid #000;">
+                    <td style="padding: 5px; font-weight: bold;">Accounts</td>
+                    <td style="padding: 5px; font-weight: bold;">$ Value</td>
+                    <td style="padding: 5px; font-weight: bold;">Description</td>
+                </tr>
+                <tr><td style="padding: 5px;">Cash</td><td style="padding: 5px;">$${fw.assetCash}</td><td style="padding: 5px;">Money with you or at home</td></tr>
+                <tr><td style="padding: 5px;">In Savings</td><td style="padding: 5px;">$${fw.assetSavings}</td><td style="padding: 5px;">Bank Name: ${fw.assetSavingsBank || '___________'}</td></tr>
+                <tr><td style="padding: 5px;">In Checking</td><td style="padding: 5px;">$${fw.assetChecking}</td><td style="padding: 5px;">Bank Name: ${fw.assetCheckingBank || '___________'}</td></tr>
+            </table>
+            
+            <table style="width: 100%; margin: 15px 0; border-collapse: collapse;">
+                <tr style="border-bottom: 1px solid #000;">
+                    <td style="padding: 5px; font-weight: bold;">Property</td>
+                    <td style="padding: 5px; font-weight: bold;">$ Value</td>
+                    <td style="padding: 5px; font-weight: bold;">Description</td>
+                </tr>
+                <tr><td style="padding: 5px;">Cars, boats, or RVs</td><td style="padding: 5px;"></td><td style="padding: 5px;">${fw.assetVehicles || '___________'}</td></tr>
+                <tr><td style="padding: 5px;">Homes and land</td><td style="padding: 5px;"></td><td style="padding: 5px;">${fw.assetProperty || '___________'}</td></tr>
+                <tr><td style="padding: 5px;">Other property</td><td style="padding: 5px;"></td><td style="padding: 5px;">${fw.assetOtherProperty || '___________'}</td></tr>
+                <tr><td style="padding: 5px;">Stocks, bonds, jewelry and other valuables</td><td style="padding: 5px;"></td><td style="padding: 5px;">${fw.assetValuables || '___________'}</td></tr>
+                <tr><td style="padding: 5px;">Any other investments</td><td style="padding: 5px;"></td><td style="padding: 5px;">${fw.assetInvestments || '___________'}</td></tr>
+            </table>
+            
+            ${fw.additionalFinancialInfo ? `
+            <div class="field-label">Is there anything else you want the court to know about your financial situation?</div>
+            <div class="field-value" style="white-space: pre-wrap;">${fw.additionalFinancialInfo}</div>
+            ` : ''}
+            
+            <p style="font-size: 10pt; margin-top: 15px;"><strong>Note:</strong> In some circumstances, the Court may require you to provide proof of income, assets, or expenses before deciding your motion.</p>
+        </div>
+
+        <div class="section" style="margin-top: 30px;">
+            <strong>11. Verified Signature</strong>
+            <p style="margin: 10px 0;">I declare under penalty of perjury under the law of Colorado that the foregoing is true and correct.</p>
+            
+            <div style="margin-top: 20px;">
+                Executed on the _______ day of ______________ _______<br>
+                <span style="margin-left: 100px;">(date) &nbsp;&nbsp;&nbsp;&nbsp; (month) &nbsp;&nbsp;&nbsp;&nbsp; (year)</span>
+            </div>
+            
+            <div style="margin-top: 15px;">
+                at City: _____________________ (or other location)<br>
+                and State: ____________________ (or country)
+            </div>
+            
+            <div style="margin-top: 30px;">
+                Print Your Name: ___________________________________________
+            </div>
+            
+            <div style="margin-top: 20px;">
+                Your Signature: ____________________________________________
+            </div>
+            
+            <div style="margin-top: 20px;">
+                Lawyer Signature: __________________________________________ (If any)
+            </div>
+        </div>
+    </div>
+            `;
+        }
+
+        function generateJDF206(data) {
+            return `
+    <!-- JDF 206 - Order re Court Fees -->
+    <div class="page">
+        <div style="border: 2px solid #000; padding: 10px; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <div style="font-weight: bold; font-size: 18pt;">JDF 206</div>
+                <div style="font-weight: bold; font-size: 16pt;">Order re Court Fees</div>
+                <div style="text-align: right; font-size: 10pt;">
+                    <div style="border: 1px solid #000; padding: 5px;">This box is for court use only.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <strong>A. Court</strong>
+            <div class="field-value">
+                <span class="checkbox"></span> District <span class="checkbox"></span> County <span class="checkbox"></span> Probate <span class="checkbox"></span> Juvenile
+            </div>
+            <div class="field-label">Colorado County:</div>
+            <div class="field-value">${data.county}</div>
+            <div class="field-label">Mailing Address:</div>
+            <div class="field-value">${data.courtStreet}, ${data.courtCity}, ${data.courtState} ${data.courtZip}</div>
+        </div>
+
+        <div class="section">
+            <strong>B. Parties to the Case</strong>
+            <div class="field-label">Petitioner/Petitioner:</div>
+            <div class="field-value">${data.plaintiffName}</div>
+            <div style="text-align: center; margin: 10px 0;">v.</div>
+            <div class="field-label">Defendant/Respondent:</div>
+            <div class="field-value">${data.defendant1Name}${data.defendant2Name ? ', ' + data.defendant2Name : ''}</div>
+        </div>
+
+        <div class="section">
+            <strong>C. Case Details</strong>
+            <div class="field-label">Number:</div>
+            <div class="field-value">___________________________</div>
+            <div class="field-label">Division:</div>
+            <div class="field-value">___________________________</div>
+            <div class="field-label">Courtroom:</div>
+            <div class="field-value">___________________________</div>
+        </div>
+
+        <div class="section">
+            <strong>1. Background</strong>
+            <p style="margin: 10px 0;">The Court has reviewed the Motion to Waive Fees filed by ${data.plaintiffName}</p>
+        </div>
+
+        <div class="section">
+            <strong>2. Findings and Orders</strong>
+            <p style="margin: 10px 0;">The Court finds that the Party is:</p>
+            
+            <div style="margin-left: 20px;">
+                <div style="margin: 10px 0;">
+                    <div><span class="checkbox"></span> <strong>a) Indigent.</strong></div>
+                    <p style="margin-left: 30px;">All Court fees and costs are waived, including:</p>
+                    <ul style="margin-left: 50px;">
+                        <li>Filing Fees.</li>
+                        <li>Reasonable Copy Fees.</li>
+                        <li>Jury Fees.</li>
+                        <li>eFiling and eService Fees (when available).</li>
+                        <li>Fees for Forms and Instructions.</li>
+                    </ul>
+                    <p style="margin-left: 30px;">If checked, also waive/provide: ___________________________</p>
+                    <p style="margin-left: 30px; font-size: 10pt;">These fees are waived for the duration of the case, or until final orders are issued if in a Domestic Relations case.</p>
+                </div>
+                
+                <div style="margin: 10px 0;">
+                    <div><span class="checkbox"></span> <strong>b) Not Indigent but allowed to pay in installments.</strong></div>
+                    <p style="margin-left: 30px;">The filing fee of $ ___________ can be paid in: <span class="checkbox"></span> Two Payments. <span class="checkbox"></span> Three Payments.</p>
+                    <p style="margin-left: 30px;">The first payment is due by (date) ___________________</p>
+                    <p style="margin-left: 30px;">The next payment is due by (date) ___________________</p>
+                    <p style="margin-left: 30px;">The final payment is due by (date) ___________________</p>
+                    <p style="margin-left: 30px; font-size: 10pt;">If payment is not received according to the schedule above, the Court can dismiss the party's claims, or the entire case, without further notice. C.J.D. 98-01 Section (VI).</p>
+                </div>
+                
+                <div style="margin: 10px 0;">
+                    <div><span class="checkbox"></span> <strong>c) Not Indigent.</strong></div>
+                    <p style="margin-left: 30px;">The party is responsible for payment of any court fees and costs.</p>
+                    <p style="margin-left: 30px;">If checked, the party must pay the filing fee of $ ___________ by (date) ___________________</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <strong>3. Findings Made by</strong>
+            <div class="field-label">Name:</div>
+            <div class="field-value">___________________________________________</div>
+            <div class="field-value">
+                <span class="checkbox"></span> Judicial Officer <span class="checkbox"></span> Court Staff
+            </div>
+            <div class="field-label">On (date)</div>
+            <div class="field-value">___________________________</div>
+        </div>
+
+        <div style="margin-top: 40px;">
+            <div style="text-align: center; font-weight: bold; margin-bottom: 20px;">So Ordered</div>
+            
+            <div>
+                Signature: ___________________________________________
+            </div>
+            
+            <div style="margin-top: 5px;">
+                <span class="checkbox"></span> Judge <span class="checkbox"></span> Magistrate
+            </div>
+            
+            <div style="margin-top: 20px;">
+                Dated: ___________________________
+            </div>
+        </div>
+    </div>
+            `;
+        }
+
+        function createPrintableForm(data) {
+            const formWindow = window.open('', '_blank');
+            const today = new Date().toLocaleDateString();
+            
+            const formHTML = `
+<!DOCTYPE html>
+<html>
+<head>
+    <title>JDF 250 - Small Claims Court Form</title>
+    <style>
+        @page {
+            margin: 0.5in;
+            size: letter;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 11pt;
+            line-height: 1.3;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .page {
+            page-break-after: always;
+            width: 100%;
+            max-width: 8.5in;
+            margin: 0 auto 40px;
+            border: 1px solid #ccc;
+            padding: 20px;
+            background: white;
+        }
+        
+        .page:last-child {
+            page-break-after: auto;
+        }
+        
+        .header {
+            text-align: center;
+            font-weight: bold;
+            font-size: 12pt;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+        }
+        
+        .form-title {
+            font-size: 13pt;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .court-use {
+            float: right;
+            border: 2px solid #000;
+            padding: 5px 10px;
+            font-size: 10pt;
+        }
+        
+        .section {
+            margin-bottom: 15px;
+        }
+        
+        .field-label {
+            font-weight: bold;
+            font-size: 10pt;
+            margin-bottom: 2px;
+        }
+        
+        .field-value {
+            border-bottom: 1px solid #000;
+            min-height: 18px;
+            padding: 2px 5px;
+            margin-bottom: 8px;
+        }
+        
+        .inline-field {
+            display: inline-block;
+            margin-right: 20px;
+        }
+        
+        .checkbox-group {
+            margin: 10px 0;
+        }
+        
+        .checkbox {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            border: 1px solid #000;
+            margin-right: 5px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        
+        .checked {
+            font-weight: bold;
+        }
+        
+        .info-box {
+            border: 1px solid #000;
+            padding: 10px;
+            margin: 15px 0;
+            background: #f9f9f9;
+        }
+        
+        .signature-line {
+            border-bottom: 1px solid #000;
+            width: 300px;
+            display: inline-block;
+            min-height: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+        }
+        
+        td {
+            padding: 5px;
+            vertical-align: top;
+        }
+        
+        .form-number {
+            font-size: 9pt;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        @media print {
+            .page {
+                border: none;
+                margin: 0;
+                padding: 0;
+            }
+            
+            body {
+                padding: 0;
+            }
+            
+            .no-print {
+                display: none;
+            }
+        }
+        
+        .print-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        
+        .print-button:hover {
+            background: #5568d3;
+        }
+    </style>
+</head>
+<body>
+    <button class="print-button no-print" onclick="window.print()">🖨️ Print Form</button>
+
+    <!-- PART 1 - COURT COPY -->
+    <div class="page">
+        <div class="form-number">JDF 250 R 1-24 (PART 1/ PAGE 1) NOTICE, CLAIM AND SUMMONS TO APPEAR FOR TRIAL</div>
+        
+        <div class="court-use">COURT USE ONLY<br>S</div>
+        
+        <div class="form-title">NOTICE, CLAIM AND SUMMONS TO APPEAR FOR TRIAL (Part 1)<br>COURT COPY</div>
+        
+        <div class="section">
+            <div class="field-label">Small Claims Court</div>
+            <div class="field-value">${data.county} County, Colorado</div>
+            <div class="field-label">Court Address:</div>
+            <div class="field-value">${data.courtStreet}, ${data.courtCity}, ${data.courtState} ${data.courtZip}</div>
+        </div>
+        
+        <div class="section">
+            <div class="field-label">PLAINTIFF(S):</div>
+            <div class="field-value">${data.plaintiffName}</div>
+            <div class="field-label">Address:</div>
+            <div class="field-value">${data.plaintiffAddress}</div>
+            <div class="field-label">City/State/Zip:</div>
+            <div class="field-value">${data.plaintiffCity}, ${data.plaintiffState} ${data.plaintiffZip}</div>
+            <div class="field-label">Phone:</div>
+            <div class="field-value">Home: ${data.plaintiffHome || '___________'} &nbsp; Work: ${data.plaintiffWork || '___________'} &nbsp; Cell: ${data.plaintiffCell || '___________'}</div>
+        </div>
+        
+        <div style="text-align: center; font-weight: bold; margin: 10px 0;">v.</div>
+        
+        <div class="section">
+            <div class="field-label">DEFENDANT(1):</div>
+            <div class="field-value">${data.defendant1Name}</div>
+            <div class="field-label">Address:</div>
+            <div class="field-value">${data.defendant1Address}</div>
+            <div class="field-label">City/State/Zip:</div>
+            <div class="field-value">${data.defendant1City}, ${data.defendant1State} ${data.defendant1Zip}</div>
+            <div class="field-label">Phone:</div>
+            <div class="field-value">Home: ${data.defendant1Home || '___________'} &nbsp; Work: ${data.defendant1Work || '___________'} &nbsp; Cell: ${data.defendant1Cell || '___________'}</div>
+        </div>
+        
+        ${data.defendant2Name ? `
+        <div class="section">
+            <div class="field-label">DEFENDANT(2):</div>
+            <div class="field-value">${data.defendant2Name}</div>
+            <div class="field-label">Address:</div>
+            <div class="field-value">${data.defendant2Address}</div>
+            <div class="field-label">City/State/Zip:</div>
+            <div class="field-value">${data.defendant2City}, ${data.defendant2State} ${data.defendant2Zip}</div>
+            <div class="field-label">Phone:</div>
+            <div class="field-value">Home: ${data.defendant2Home || '___________'} &nbsp; Work: ${data.defendant2Work || '___________'} &nbsp; Cell: ${data.defendant2Cell || '___________'}</div>
+        </div>
+        ` : ''}
+        
+        ${data.defendant1Agent ? `
+        <div class="section">
+            <div class="field-label">Registered Agent Name:</div>
+            <div class="field-value">${data.defendant1Agent}</div>
+        </div>
+        ` : ''}
+        
+        <div class="checkbox-group">
+            <div>1. The Defendant(s) is/are in the military service: 
+                <span class="checkbox">${data.defendant1Military === 'Yes' ? '✓' : ''}</span>Yes 
+                <span class="checkbox">${data.defendant1Military === 'No' ? '✓' : ''}</span>No 
+                <span class="checkbox">${data.defendant1Military === 'Unknown' ? '✓' : ''}</span>Unknown
+            </div>
+        </div>
+        
+        <div class="checkbox-group">
+            <div>2. The Defendant(s) reside(s), is/are regularly employed, has/have an office for the transaction of business, or is/are a student in this county, or real property located in this county is the subject of claim(s) arising from a restrictive covenant or security deposit dispute. 
+                <span class="checkbox">✓</span>Yes <span class="checkbox"></span>No
+            </div>
+        </div>
+        
+        <div class="checkbox-group">
+            <div>3. I/We understand that it is my/our responsibility to have each Defendant served with the "Defendant's Copy" of this Notice by a person whose age is 18 years or older and who is not a party to this action 15 days prior to the trial and to provide the Court with written proof of service. 
+                <span class="checkbox">✓</span>Yes <span class="checkbox"></span>No
+            </div>
+        </div>
+        
+        <div class="checkbox-group">
+            <div>4. I am an attorney: 
+                <span class="checkbox">${data.plaintiffAttorney === 'Yes' ? '✓' : ''}</span>Yes 
+                <span class="checkbox">${data.plaintiffAttorney === 'No' ? '✓' : ''}</span>No
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <strong>Notice and Summons to Appear for Trial</strong><br>
+            To the Defendant(s):<br>
+            You are scheduled to have your trial in this case on <strong>${data.trialDate || '________________________'}</strong> (date) at <strong>${data.trialTime || '__________'}</strong> (time) at the Court address stated in the above caption. Bring with you all books, papers and witnesses you need to establish your defense. If you do not appear, judgment may be entered against you. If you wish to defend the claim or present a counterclaim, you must provide a written response or written counterclaim on or before the scheduled trial date and pay a nonrefundable filing fee.
+        </div>
+        
+        <div style="margin: 15px 0;">
+            Dated: ${today} &nbsp;&nbsp;&nbsp;&nbsp; ______________________________________<br>
+            <span style="margin-left: 180px;">Clerk of Court/Deputy Clerk</span>
+        </div>
+        
+        <div class="section">
+            <div class="field-label">Plaintiff(s)'s Claim (Please summarize reasons to support your claim below.)</div>
+            <p>The Defendant(s) owe(s) me <strong>$${data.claimAmount}</strong>, which includes penalties, plus interest and costs allowed by law, and/or should be ordered to return property, perform a contract or set aside a contract or comply with a restrictive covenant for the following reasons. (If seeking return of property, please describe the property being requested).</p>
+            <div class="field-value" style="min-height: 80px; white-space: pre-wrap;">${data.claimDescription}</div>
+        </div>
+        
+        <p style="font-size: 10pt;"><strong>Note:</strong> The combined value of money, property, specific performance or cost to remedy a covenant violation cannot exceed $7,500.00.</p>
+        
+        <p style="margin-top: 20px;">I/we declare under penalty of perjury under the law of Colorado that the foregoing is true and correct. I/we have not filed in any Small Claims Court in this County more than 2 claims during this calendar month, nor more than 18 claims in this County this calendar year.</p>
+        
+        <div style="margin-top: 30px;">
+            Dated: ${today} &nbsp;&nbsp;&nbsp;&nbsp; ___________________________________________<br>
+            <span style="margin-left: 200px;">Plaintiff's Signature</span>
+        </div>
+    </div>
+
+    <!-- PART 2 - DEFENDANT'S COPY (Pages 2-3) -->
+    <div class="page">
+        <div class="form-number">JDF 250 R1-24 (PART 2/ PAGE 2) NOTICE, CLAIM AND SUMMONS TO APPEAR FOR TRIAL</div>
+        
+        <div class="court-use">COURT USE ONLY<br>S</div>
+        
+        <div class="form-title">NOTICE, CLAIM AND SUMMONS TO APPEAR FOR TRIAL (Part 2)<br>DEFENDANT'S COPY</div>
+        
+        <div class="section">
+            <div class="field-label">Small Claims Court</div>
+            <div class="field-value">${data.county} County, Colorado</div>
+            <div class="field-label">Court Address:</div>
+            <div class="field-value">${data.courtStreet}, ${data.courtCity}, ${data.courtState} ${data.courtZip}</div>
+        </div>
+        
+        <div class="section">
+            <div class="field-label">PLAINTIFF(S):</div>
+            <div class="field-value">${data.plaintiffName}</div>
+            <div class="field-label">Address:</div>
+            <div class="field-value">${data.plaintiffAddress}</div>
+            <div class="field-label">City/State/Zip:</div>
+            <div class="field-value">${data.plaintiffCity}, ${data.plaintiffState} ${data.plaintiffZip}</div>
+            <div class="field-label">Phone:</div>
+            <div class="field-value">Home: ${data.plaintiffHome || '___________'} &nbsp; Work: ${data.plaintiffWork || '___________'} &nbsp; Cell: ${data.plaintiffCell || '___________'}</div>
+        </div>
+        
+        <div style="text-align: center; font-weight: bold; margin: 10px 0;">v.</div>
+        
+        <div class="section">
+            <div class="field-label">DEFENDANT(1):</div>
+            <div class="field-value">${data.defendant1Name}</div>
+            <div class="field-label">Address:</div>
+            <div class="field-value">${data.defendant1Address}</div>
+            <div class="field-label">City/State/Zip:</div>
+            <div class="field-value">${data.defendant1City}, ${data.defendant1State} ${data.defendant1Zip}</div>
+            <div class="field-label">Phone:</div>
+            <div class="field-value">Home: ${data.defendant1Home || '___________'} &nbsp; Work: ${data.defendant1Work || '___________'} &nbsp; Cell: ${data.defendant1Cell || '___________'}</div>
+        </div>
+        
+        ${data.defendant2Name ? `
+        <div class="section">
+            <div class="field-label">DEFENDANT(2):</div>
+            <div class="field-value">${data.defendant2Name}</div>
+            <div class="field-label">Address:</div>
+            <div class="field-value">${data.defendant2Address}</div>
+            <div class="field-label">City/State/Zip:</div>
+            <div class="field-value">${data.defendant2City}, ${data.defendant2State} ${data.defendant2Zip}</div>
+            <div class="field-label">Phone:</div>
+            <div class="field-value">Home: ${data.defendant2Home || '___________'} &nbsp; Work: ${data.defendant2Work || '___________'} &nbsp; Cell: ${data.defendant2Cell || '___________'}</div>
+        </div>
+        ` : ''}
+        
+        ${data.defendant1Agent ? `
+        <div class="section">
+            <div class="field-label">Registered Agent Name:</div>
+            <div class="field-value">${data.defendant1Agent}</div>
+        </div>
+        ` : ''}
+        
+        <div class="checkbox-group">
+            <div>1. The Defendant(s) is/are in the military service: 
+                <span class="checkbox">${data.defendant1Military === 'Yes' ? '✓' : ''}</span>Yes 
+                <span class="checkbox">${data.defendant1Military === 'No' ? '✓' : ''}</span>No 
+                <span class="checkbox">${data.defendant1Military === 'Unknown' ? '✓' : ''}</span>Unknown
+            </div>
+        </div>
+        
+        <div class="checkbox-group">
+            <div>2. The Defendant(s) reside(s), is/are regularly employed, has/have an office for the transaction of business, or is/are a student in this county, or real property located in this county is the subject of claim(s) arising from a restrictive covenant or security deposit dispute. 
+                <span class="checkbox">✓</span>Yes <span class="checkbox"></span>No
+            </div>
+        </div>
+        
+        <div class="checkbox-group">
+            <div>3. I/We understand that it is my/our responsibility to have each Defendant served with the "Defendant's Copy" of this Notice by a person whose age is 18 years or older and who is not a party to this action 15 days prior to the trial and to provide the Court with written proof of service. 
+                <span class="checkbox">✓</span>Yes <span class="checkbox"></span>No
+            </div>
+        </div>
+        
+        <div class="checkbox-group">
+            <div>4. I am an attorney: 
+                <span class="checkbox">${data.plaintiffAttorney === 'Yes' ? '✓' : ''}</span>Yes 
+                <span class="checkbox">${data.plaintiffAttorney === 'No' ? '✓' : ''}</span>No
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <strong>Notice and Summons to Appear for Trial</strong><br>
+            To the Defendant(s):<br>
+            You are scheduled to have your trial in this case on <strong>${data.trialDate || '________________________'}</strong> (date) at <strong>${data.trialTime || '__________'}</strong> (time) at the Court address stated in the above caption. Bring with you all books, papers and witnesses you need to establish your defense. If you do not appear, judgment may be entered against you. If you wish to defend the claim or present a counterclaim, you must provide a written response or written counterclaim on or before the scheduled trial date and pay a nonrefundable filing fee.
+        </div>
+        
+        <div style="margin: 15px 0;">
+            Dated: ${today} &nbsp;&nbsp;&nbsp;&nbsp; ______________________________________<br>
+            <span style="margin-left: 180px;">Clerk of Court/Deputy Clerk</span>
+        </div>
+        
+        <div class="section">
+            <div class="field-label">Plaintiff(s)'s Claim (Please summarize reasons to support your claim below.)</div>
+            <p>The Defendant(s) owe(s) me <strong>$${data.claimAmount}</strong>, which includes penalties, plus interest and costs allowed by law, and/or should be ordered to return property, perform a contract or set aside a contract or comply with a restrictive covenant for the following reasons. (If seeking return of property, please describe the property being requested).</p>
+            <div class="field-value" style="min-height: 80px; white-space: pre-wrap;">${data.claimDescription}</div>
+        </div>
+        
+        <p style="font-size: 10pt;"><strong>Note:</strong> The combined value of money, property, specific performance or cost to remedy a covenant violation cannot exceed $7,500.00.</p>
+        
+        <p style="margin-top: 20px;">I/we declare under penalty of perjury under the law of Colorado that the foregoing is true and correct. I/we have not filed in any Small Claims Court in this County more than 2 claims during this calendar month, nor more than 18 claims in this County this calendar year.</p>
+        
+        <div style="margin-top: 30px;">
+            Dated: ${today} &nbsp;&nbsp;&nbsp;&nbsp; ___________________________________________<br>
+            <span style="margin-left: 200px;">Plaintiff's Signature</span>
+        </div>
+    </div>
+
+    <!-- PART 2 PAGE 3 - Defendant Response Section -->
+    <div class="page">
+        <div class="form-number">JDF 250 R1-24- (PART 2/ PAGE 3) NOTICE, CLAIM, AND SUMMONS TO APPEAR DEFENDANT'S COPY</div>
+        
+        <div class="form-title">Defendant's Response</div>
+        
+        <p>You must complete and fill out a response and or counterclaim on reverse side of Defendant's copy and bring to Court. (If responding, pay the appropriate filing fee). I do not owe the Plaintiff(s) or am not responsible to the Plaintiff(s) because:</p>
+        
+        <div class="field-value" style="min-height: 100px;"></div>
+        
+        <div class="form-title" style="margin-top: 30px;">Defendant's Counterclaim</div>
+        
+        <p>(If submitting a counterclaim, pay the appropriate filing fee). The Plaintiff(s) owe(s) me $_______________, which includes penalties, plus interest and costs allowed by law and/or should be ordered to return property, perform a contract or set aside a contract or comply with a restrictive covenant for the following reasons. (If seeking return of property, please describe the property being requested).</p>
+        
+        <div class="field-value" style="min-height: 80px;"></div>
+        
+        <div class="checkbox-group">
+            <span class="checkbox"></span> The amount of my/our counterclaim does not exceed the jurisdictional amount of the Small Claims Court of $7,500.00.
+        </div>
+        
+        <div class="checkbox-group">
+            <span class="checkbox"></span> The amount of my/our counterclaim exceeds the jurisdictional amount of the Small Claims Court, but I/we wish to limit the amount that I/we wish to recover from the Plaintiff to $7,500.00.
+        </div>
+        
+        <div class="checkbox-group">
+            <span class="checkbox"></span> The amount of my/our counterclaim exceeds the jurisdictional amount of the Small Claims Court, and I/we wish to have the case sent to <span class="checkbox"></span>County Court (only if I/we wish to limit the amount I/we can recover from the plaintiff to $25,000.00) <span class="checkbox"></span>District Court (I /we do not wish to limit the amount I/we can recover from the Plaintiff(s)) and will pay the appropriate filing fee. I/we am/are filing a Notice of Removal and paying the appropriate filing fee to the Court at this time.
+        </div>
+        
+        <div class="checkbox-group">
+            <div>I am an attorney: <span class="checkbox"></span>Yes <span class="checkbox"></span>No</div>
+        </div>
+        
+        <p style="margin-top: 20px;">I declare under penalty of perjury that this information is true and correct and that I mailed a copy of the Response/Counterclaim to the Plaintiff(s) at the address(es) stated on this form on ____________________ (date).</p>
+        
+        <div style="margin-top: 30px;">
+            <div class="field-value" style="width: 400px;">Defendant's Address</div>
+            
+            <div style="margin-top: 20px;">
+                _____________________________________ &nbsp;&nbsp; ____________________________________________________________<br>
+                Defendant's Signature &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Date &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Telephone #: Home _______ Work _______ Cell _______
+            </div>
+        </div>
+        
+        <div class="info-box" style="margin-top: 30px; font-size: 9pt;">
+            <strong>Information for Defendants in Small Claims Cases</strong>
+            <p><strong>A. Filing Fees.</strong> Response without a counterclaim: Claim $500.00 or less: $26.00 ⧫ Claim over $500.00 but less than $7,500.00: $41.00. Response with a counterclaim: If Plaintiff's claim is $500.00 or less and counterclaim is $500.00 or less: $31.00. If Plaintiff's claim is more than $500.00 or counterclaim is more than $500.00: $46.00</p>
+            
+            <p><strong>B. Response.</strong> You have been served with a Summons. If you fail to appear on the trial date shown on this notice, judgment may be entered against you. If you wish to defend the claim or present a counterclaim, you must file with the Court Clerk a written response or counterclaim on or before the scheduled trial date, provide a copy to the Plaintiff(s), pay the appropriate nonrefundable filing fee, and appear on the date set for trial in this notice with all evidence and witnesses needed to establish your defense.</p>
+            
+            <p><strong>C-K.</strong> [Additional information sections about Subpoenas, Counterclaim, Trial Responsibility, Appeal, Judgment, Case Inquiries, Attorney, Judicial Officer, and Language Interpreter - see original form for complete text]</p>
+        </div>
+    </div>
+
+    <!-- PART 3 - PLAINTIFF'S COPY (Pages 4-5) -->
+    <div class="page">
+        <div class="form-number">JDF 250 R1-24 (PART 3/ PAGE 4) NOTICE, CLAIM AND SUMMONS TO APPEAR FOR TRIAL</div>
+        
+        <div class="court-use">COURT USE ONLY<br>S</div>
+        
+        <div class="form-title">NOTICE, CLAIM AND SUMMONS TO APPEAR FOR TRIAL (Part 3)<br>PLAINTIFF'S COPY</div>
+        
+        <div class="section">
+            <div class="field-label">Small Claims Court</div>
+            <div class="field-value">${data.county} County, Colorado</div>
+            <div class="field-label">Court Address:</div>
+            <div class="field-value">${data.courtStreet}, ${data.courtCity}, ${data.courtState} ${data.courtZip}</div>
+        </div>
+        
+        <div class="section">
+            <div class="field-label">PLAINTIFF(S):</div>
+            <div class="field-value">${data.plaintiffName}</div>
+            <div class="field-label">Address:</div>
+            <div class="field-value">${data.plaintiffAddress}</div>
+            <div class="field-label">City/State/Zip:</div>
+            <div class="field-value">${data.plaintiffCity}, ${data.plaintiffState} ${data.plaintiffZip}</div>
+            <div class="field-label">Phone:</div>
+            <div class="field-value">Home: ${data.plaintiffHome || '___________'} &nbsp; Work: ${data.plaintiffWork || '___________'} &nbsp; Cell: ${data.plaintiffCell || '___________'}</div>
+        </div>
+        
+        <div style="text-align: center; font-weight: bold; margin: 10px 0;">v.</div>
+        
+        <div class="section">
+            <div class="field-label">DEFENDANT(1):</div>
+            <div class="field-value">${data.defendant1Name}</div>
+            <div class="field-label">Address:</div>
+            <div class="field-value">${data.defendant1Address}</div>
+            <div class="field-label">City/State/Zip:</div>
+            <div class="field-value">${data.defendant1City}, ${data.defendant1State} ${data.defendant1Zip}</div>
+            <div class="field-label">Phone:</div>
+            <div class="field-value">Home: ${data.defendant1Home || '___________'} &nbsp; Work: ${data.defendant1Work || '___________'} &nbsp; Cell: ${data.defendant1Cell || '___________'}</div>
+        </div>
+        
+        ${data.defendant2Name ? `
+        <div class="section">
+            <div class="field-label">DEFENDANT(2):</div>
+            <div class="field-value">${data.defendant2Name}</div>
+            <div class="field-label">Address:</div>
+            <div class="field-value">${data.defendant2Address}</div>
+            <div class="field-label">City/State/Zip:</div>
+            <div class="field-value">${data.defendant2City}, ${data.defendant2State} ${data.defendant2Zip}</div>
+            <div class="field-label">Phone:</div>
+            <div class="field-value">Home: ${data.defendant2Home || '___________'} &nbsp; Work: ${data.defendant2Work || '___________'} &nbsp; Cell: ${data.defendant2Cell || '___________'}</div>
+        </div>
+        ` : ''}
+        
+        ${data.defendant1Agent ? `
+        <div class="section">
+            <div class="field-label">Registered Agent Name:</div>
+            <div class="field-value">${data.defendant1Agent}</div>
+        </div>
+        ` : ''}
+        
+        <div class="checkbox-group">
+            <div>1. The Defendant(s) is/are in the military service: 
+                <span class="checkbox">${data.defendant1Military === 'Yes' ? '✓' : ''}</span>Yes 
+                <span class="checkbox">${data.defendant1Military === 'No' ? '✓' : ''}</span>No 
+                <span class="checkbox">${data.defendant1Military === 'Unknown' ? '✓' : ''}</span>Unknown
+            </div>
+        </div>
+        
+        <div class="checkbox-group">
+            <div>2. The Defendant(s) reside(s), is/are regularly employed, has/have an office for the transaction of business, or is/are a student in this county, or real property located in this county is the subject of claim(s) arising from a restrictive covenant or security deposit dispute. 
+                <span class="checkbox">✓</span>Yes <span class="checkbox"></span>No
+            </div>
+        </div>
+        
+        <div class="checkbox-group">
+            <div>3. I/We understand that it is my/our responsibility to have each Defendant served with the "Defendant's Copy" of this Notice by a person whose age is 18 years or older and who is not a party to this action 15 days prior to the trial and to provide the Court with written proof of service. 
+                <span class="checkbox">✓</span>Yes <span class="checkbox"></span>No
+            </div>
+        </div>
+        
+        <div class="checkbox-group">
+            <div>4. I am an attorney: 
+                <span class="checkbox">${data.plaintiffAttorney === 'Yes' ? '✓' : ''}</span>Yes 
+                <span class="checkbox">${data.plaintiffAttorney === 'No' ? '✓' : ''}</span>No
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <strong>Notice and Summons to Appear for Trial</strong><br>
+            To the Defendant(s):<br>
+            You are scheduled to have your trial in this case on <strong>${data.trialDate || '________________________'}</strong> (date) at <strong>${data.trialTime || '__________'}</strong> (time) at the Court address stated in the above caption. Bring with you all books, papers and witnesses you need to establish your defense. If you do not appear, judgment may be entered against you. If you wish to defend the claim or present a counterclaim, you must provide a written response or written counterclaim on or before the scheduled trial date and pay a nonrefundable filing fee.
+        </div>
+        
+        <div style="margin: 15px 0;">
+            Dated: ${today} &nbsp;&nbsp;&nbsp;&nbsp; ______________________________________<br>
+            <span style="margin-left: 180px;">Clerk of Court/Deputy Clerk</span>
+        </div>
+        
+        <div class="section">
+            <div class="field-label">Plaintiff(s)'s Claim (Please summarize reasons to support your claim below.)</div>
+            <p>The Defendant(s) owe(s) me <strong>$${data.claimAmount}</strong>, which includes penalties, plus interest and costs allowed by law, and/or should be ordered to return property, perform a contract or set aside a contract or comply with a restrictive covenant for the following reasons. (If seeking return of property, please describe the property being requested).</p>
+            <div class="field-value" style="min-height: 80px; white-space: pre-wrap;">${data.claimDescription}</div>
+        </div>
+        
+        <p style="font-size: 10pt;"><strong>Note:</strong> The combined value of money, property, specific performance or cost to remedy a covenant violation cannot exceed $7,500.00.</p>
+        
+        <p style="margin-top: 20px;">I/we declare under penalty of perjury under the law of Colorado that the foregoing is true and correct. I/we have not filed in any Small Claims Court in this County more than 2 claims during this calendar month, nor more than 18 claims in this County this calendar year.</p>
+        
+        <div style="margin-top: 30px;">
+            Dated: ${today} &nbsp;&nbsp;&nbsp;&nbsp; ___________________________________________<br>
+            <span style="margin-left: 200px;">Plaintiff's Signature</span>
+        </div>
+    </div>
+
+    <!-- PART 3 PAGE 5 - Information for Plaintiffs -->
+    <div class="page">
+        <div class="form-number">JDF 250 R1-24 (PART 3/ PAGE 5) NOTICE, CLAIM AND SUMMONS TO APPEAR FOR TRIAL PLAINTIFF'S COPY</div>
+        
+        <div class="info-box" style="font-size: 9pt;">
+            <strong>INFORMATION FOR PLAINTIFFS IN SMALL CLAIMS CASES</strong>
+            
+            <p><strong>A. FILING.</strong> You may file your claim in this Court if: 1. Your claim is for money, property, specific performance or rescission of a contract, or enforcement of a restrictive covenant that does not exceed $7,500.00. You may reduce a larger claim and waive the balance. You cannot divide a claim and file two separate cases. 2. At least one of the parties you sue resides, is regularly employed, has an office for the transaction of business, or is a student in this county, or they own rental property in the county that is the subject of this claim. 3. You pay the clerk one of the following NONREFUNDABLE filing fees. Claim $500.00 or less: $31.00. Claim over $500.00 but no more than $7,500.00: $55.00</p>
+            
+            <p><strong>B. SERVICE.</strong> This notice to appear must be served at least 15 days prior to the trial on each Defendant. It may be served by: 1. Any person whose age is 18 years or older and who is not a party to this action. 2. Sheriff or process server. 3. Certified Mail that is mailed by the clerk. You must deposit the cost for certified mail in advance.</p>
+            
+            <p><strong>C. SETTLEMENT.</strong> If you settle your claim before trial, you must notify the Small Claims Court and Defendant in writing.</p>
+            
+            <p><strong>D-K.</strong> [Additional information sections about Subpoenas, Trial Responsibility, Appeal, Judgment, Case Inquiries, Attorney, Judicial Officer, and Language Interpreter - see original form for complete text]</p>
+        </div>
+    </div>
+
+    <!-- PART 4 - ADDITIONAL COURT COPY (Pages 6-7) -->
+    <div class="page">
+        <div class="form-number">JDF 250 R1-24 (PART 4/ PAGE 6) NOTICE, CLAIM AND SUMMONS TO APPEAR FOR TRIAL</div>
+        
+        <div class="court-use">COURT USE ONLY<br>S</div>
+        
+        <div class="form-title">NOTICE, CLAIM AND SUMMONS TO APPEAR FOR TRIAL (Part 4)<br>COURT COPY</div>
+        
+        <div class="section">
+            <div class="field-label">Small Claims Court</div>
+            <div class="field-value">${data.county} County, Colorado</div>
+            <div class="field-label">Court Address:</div>
+            <div class="field-value">${data.courtStreet}, ${data.courtCity}, ${data.courtState} ${data.courtZip}</div>
+        </div>
+        
+        <div class="section">
+            <div class="field-label">PLAINTIFF(S):</div>
+            <div class="field-value">${data.plaintiffName}</div>
+            <div class="field-label">Address:</div>
+            <div class="field-value">${data.plaintiffAddress}</div>
+            <div class="field-label">City/State/Zip:</div>
+            <div class="field-value">${data.plaintiffCity}, ${data.plaintiffState} ${data.plaintiffZip}</div>
+            <div class="field-label">Phone:</div>
+            <div class="field-value">Home: ${data.plaintiffHome || '___________'} &nbsp; Work: ${data.plaintiffWork || '___________'} &nbsp; Cell: ${data.plaintiffCell || '___________'}</div>
+        </div>
+        
+        <div style="text-align: center; font-weight: bold; margin: 10px 0;">v.</div>
+        
+        <div class="section">
+            <div class="field-label">DEFENDANT(1):</div>
+            <div class="field-value">${data.defendant1Name}</div>
+            <div class="field-label">Address:</div>
+            <div class="field-value">${data.defendant1Address}</div>
+            <div class="field-label">City/State/Zip:</div>
+            <div class="field-value">${data.defendant1City}, ${data.defendant1State} ${data.defendant1Zip}</div>
+            <div class="field-label">Phone:</div>
+            <div class="field-value">Home: ${data.defendant1Home || '___________'} &nbsp; Work: ${data.defendant1Work || '___________'} &nbsp; Cell: ${data.defendant1Cell || '___________'}</div>
+        </div>
+        
+        ${data.defendant2Name ? `
+        <div class="section">
+            <div class="field-label">DEFENDANT(2):</div>
+            <div class="field-value">${data.defendant2Name}</div>
+            <div class="field-label">Address:</div>
+            <div class="field-value">${data.defendant2Address}</div>
+            <div class="field-label">City/State/Zip:</div>
+            <div class="field-value">${data.defendant2City}, ${data.defendant2State} ${data.defendant2Zip}</div>
+            <div class="field-label">Phone:</div>
+            <div class="field-value">Home: ${data.defendant2Home || '___________'} &nbsp; Work: ${data.defendant2Work || '___________'} &nbsp; Cell: ${data.defendant2Cell || '___________'}</div>
+        </div>
+        ` : ''}
+        
+        ${data.defendant1Agent ? `
+        <div class="section">
+            <div class="field-label">Registered Agent Name:</div>
+            <div class="field-value">${data.defendant1Agent}</div>
+        </div>
+        ` : ''}
+        
+        <div class="checkbox-group">
+            <div>1. The Defendant(s) is/are in the military service: 
+                <span class="checkbox">${data.defendant1Military === 'Yes' ? '✓' : ''}</span>Yes 
+                <span class="checkbox">${data.defendant1Military === 'No' ? '✓' : ''}</span>No 
+                <span class="checkbox">${data.defendant1Military === 'Unknown' ? '✓' : ''}</span>Unknown
+            </div>
+        </div>
+        
+        <div class="checkbox-group">
+            <div>2. The Defendant(s) reside(s), is/are regularly employed, has/have an office for the transaction of business, or is/are a student in this county, or real property located in this county is the subject of claim(s) arising from a restrictive covenant or security deposit dispute. 
+                <span class="checkbox">✓</span>Yes <span class="checkbox"></span>No
+            </div>
+        </div>
+        
+        <div class="checkbox-group">
+            <div>3. I/We understand that it is my/our responsibility to have each Defendant served with the "Defendant's Copy" of this Notice by a person whose age is 18 years or older and who is not a party to this action 15 days prior to the trial and to provide the Court with written proof of service. 
+                <span class="checkbox">✓</span>Yes <span class="checkbox"></span>No
+            </div>
+        </div>
+        
+        <div class="checkbox-group">
+            <div>4. I am an attorney: 
+                <span class="checkbox">${data.plaintiffAttorney === 'Yes' ? '✓' : ''}</span>Yes 
+                <span class="checkbox">${data.plaintiffAttorney === 'No' ? '✓' : ''}</span>No
+            </div>
+        </div>
+        
+        <div class="info-box">
+            <strong>Notice and Summons to Appear for Trial</strong><br>
+            To the Defendant(s):<br>
+            You are scheduled to have your trial in this case on <strong>${data.trialDate || '________________________'}</strong> (date) at <strong>${data.trialTime || '__________'}</strong> (time) at the Court address stated in the above caption. Bring with you all books, papers and witnesses you need to establish your defense. If you do not appear, judgment may be entered against you. If you wish to defend the claim or present a counterclaim, you must provide a written response or written counterclaim on or before the scheduled trial date and pay a nonrefundable filing fee.
+        </div>
+        
+        <div style="margin: 15px 0;">
+            Dated: ${today} &nbsp;&nbsp;&nbsp;&nbsp; ______________________________________<br>
+            <span style="margin-left: 180px;">Clerk of Court/Deputy Clerk</span>
+        </div>
+        
+        <div class="section">
+            <div class="field-label">Plaintiff(s)'s Claim (Please summarize reasons to support your claim below.)</div>
+            <p>The Defendant(s) owe(s) me <strong>$${data.claimAmount}</strong>, which includes penalties, plus interest and costs allowed by law, and/or should be ordered to return property, perform a contract or set aside a contract or comply with a restrictive covenant for the following reasons. (If seeking return of property, please describe the property being requested).</p>
+            <div class="field-value" style="min-height: 80px; white-space: pre-wrap;">${data.claimDescription}</div>
+        </div>
+        
+        <p style="font-size: 10pt;"><strong>Note:</strong> The combined value of money, property, specific performance or cost to remedy a covenant violation cannot exceed $7,500.00.</p>
+        
+        <p style="margin-top: 20px;">I/we declare under penalty of perjury under the law of Colorado that the foregoing is true and correct. I/we have not filed in any Small Claims Court in this County more than 2 claims during this calendar month, nor more than 18 claims in this County this calendar year.</p>
+        
+        <div style="margin-top: 30px;">
+            Dated: ${today} &nbsp;&nbsp;&nbsp;&nbsp; ___________________________________________<br>
+            <span style="margin-left: 200px;">Plaintiff's Signature</span>
+        </div>
+    </div>
+
+    <!-- PART 4 PAGE 7 - Affidavit of Service -->
+    <div class="page">
+        <div class="form-number">JDF 250 R1-24 (PART 4/ PAGE 7) NOTICE, CLAIM AND SUMMONS TO APPEAR FOR TRIAL COURT COPY</div>
+        
+        <div class="form-title">AFFIDAVIT OF SERVICE<br>(Must be returned to Court)</div>
+        
+        <div class="section">
+            <div class="field-label">Case Name v. Case Number:</div>
+            <div class="field-value">${data.plaintiffName} v. ${data.defendant1Name}</div>
+        </div>
+        
+        <p>I swear/affirm under oath that I am 18 years or older and not a party to the action, and that I served the Notice, Claim, and Summons to Appear for Trial (JDF 250) on the following:</p>
+        
+        <table style="margin: 20px 0; border: 1px solid #000;">
+            <tr>
+                <td style="border: 1px solid #000; padding: 10px; font-weight: bold;">Name of Person Served</td>
+                <td style="border: 1px solid #000; padding: 10px; font-weight: bold;">Date and Time of Service</td>
+                <td style="border: 1px solid #000; padding: 10px; font-weight: bold;">Address of Service<br>(Street, County, City, State)</td>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #000; padding: 20px;"></td>
+                <td style="border: 1px solid #000; padding: 20px;"></td>
+                <td style="border: 1px solid #000; padding: 20px;"></td>
+            </tr>
+        </table>
+        
+        <div class="field-label" style="margin-top: 20px;">Check type of Service:</div>
+        <div class="checkbox-group">
+            <span class="checkbox"></span> By handing the documents to a person identified to me as the Defendant.
+        </div>
+        <div class="checkbox-group">
+            <span class="checkbox"></span> By identifying the documents, offering to deliver them to a person identified to me as the Defendant who refused service, and then leaving the documents in a conspicuous place.
+        </div>
+        <div class="checkbox-group">
+            <span class="checkbox"></span> By leaving the documents at the Defendant's usual place of abode with (Name of Person) ______________________ who is a member of the Defendant's family and whose age is 18 years or older. (Identify family relationship) ___________________________.
+        </div>
+        <div class="checkbox-group">
+            <span class="checkbox"></span> By leaving the documents at the Defendant's usual workplace with (Name of Person) __________________________ who is the Defendant's secretary, administrative assistant, bookkeeper, or managing agent. (Circle title of person served.)
+        </div>
+        <div class="checkbox-group">
+            <span class="checkbox"></span> By leaving the documents with _____________________ (Name of Person), who as _______________ (title) is authorized by appointment or by law to receive service of process for the Defendant.
+        </div>
+        <div class="checkbox-group">
+            <span class="checkbox"></span> By leaving the documents with an officer, partner, manager, stockholder, elected official or functional equivalent pursuant to C.R.C.P. 304 _______________________ (please identify) of the corporation or non-corporate entity which was to be served. (Circle title of person who was served.)
+        </div>
+        <div class="checkbox-group">
+            <span class="checkbox"></span> By serving the documents as follows (other service under C.R.C.P. 304:_____________________________ ______________________________________________________________________________________.
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <p>I have charged the following fees for my services in this matter:</p>
+            <div class="checkbox-group">
+                <span class="checkbox"></span> Private process server &nbsp;&nbsp;&nbsp; <span class="checkbox"></span> Sheriff, ____________________________County
+            </div>
+            <p>Fee $ ______________ Mileage $ _____________</p>
+            
+            <div style="margin-top: 30px;">
+                ___________________________________________ <br>
+                Signature of Process Server
+            </div>
+            <div style="margin-top: 10px;">
+                ___________________________________________ <br>
+                Name (Print or type)
+            </div>
+        </div>
+        
+        <div style="margin-top: 30px;">
+            <p>Subscribed and affirmed, or sworn to before me in the County of ______________________, State of ________________, this _______ day of _______________, 20 ______.</p>
+            
+            <div style="margin-top: 20px;">
+                My Commission Expires: ________________________ &nbsp;&nbsp; ____________________________________________<br>
+                <span style="margin-left: 350px;">Notary Public</span>
+            </div>
+        </div>
+        
+        <div class="info-box" style="margin-top: 30px;">
+            <strong>CERTIFICATE OF SERVICE BY MAILING</strong><br>
+            (To be performed by Clerk within three days of filing)
+            <p>I hereby certify that on __________________________(date), I mailed a true and correct copy of the NOTICE, CLAIM, AND SUMMONS TO APPEAR FOR TRIAL, by placing it in the United States Mail, postage pre-paid to the Defendant(s) at the address(es) listed above.</p>
+            
+            <div style="margin-top: 20px;">
+                ________________________________________ <br>
+                Clerk of Court/Deputy Clerk
+            </div>
+            
+            <div class="checkbox-group" style="margin-top: 15px;">
+                <span class="checkbox"></span> (If applicable) Plaintiff(s) notified of non-service on (date) ______________________. Clerk's Initials _______________
+            </div>
+        </div>
+    </div>
+
+    ${data.requestFeeWaiver ? generateJDF205(data) : ''}
+    ${data.requestFeeWaiver ? generateJDF206(data) : ''}
+
+</body>
+</html>
+            `;
+            
+            formWindow.document.write(formHTML);
+            formWindow.document.close();
+        }
+
+        // Initialize
+        updateProgress();
+        
+        // Event listeners for conditional fields
+        document.querySelectorAll('input[name="needInterpreter"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const languageGroup = document.getElementById('interpreterLanguageGroup');
+                if (this.value === 'Yes') {
+                    languageGroup.style.display = 'block';
+                } else {
+                    languageGroup.style.display = 'none';
+                }
+            });
+        });
+        
+        document.querySelectorAll('input[name="homeOwnership"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const otherGroup = document.getElementById('homeOtherGroup');
+                if (this.value === 'Other') {
+                    otherGroup.style.display = 'block';
+                } else {
+                    otherGroup.style.display = 'none';
+                }
+            });
+        });
+        
+        document.querySelectorAll('input[name="currentlyEmployed"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const employedFields = document.getElementById('employedFields');
+                const notEmployedFields = document.getElementById('notEmployedFields');
+                if (this.value === 'Yes') {
+                    employedFields.style.display = 'block';
+                    notEmployedFields.style.display = 'none';
+                } else {
+                    employedFields.style.display = 'none';
+                    notEmployedFields.style.display = 'block';
+                }
+            });
+        });
+        
+        // Handle "None of the above" checkbox for programs
+        document.getElementById('programNone')?.addEventListener('change', function() {
+            const financialSection = document.getElementById('financialDetailsSection');
+            if (this.checked) {
+                // Uncheck all other program checkboxes
+                ['programAidBlind', 'programOldAgePension', 'programSSI', 'programTANF', 'programSNAP', 'programAND'].forEach(id => {
+                    const checkbox = document.getElementById(id);
+                    if (checkbox) checkbox.checked = false;
+                });
+                financialSection.style.display = 'block';
+            }
+        });
+        
+        // If any program checkbox is checked, uncheck "None" and hide financial details
+        ['programAidBlind', 'programOldAgePension', 'programSSI', 'programTANF', 'programSNAP', 'programAND'].forEach(id => {
+            document.getElementById(id)?.addEventListener('change', function() {
+                if (this.checked) {
+                    const noneCheckbox = document.getElementById('programNone');
+                    if (noneCheckbox) noneCheckbox.checked = false;
+                    
+                    // Check if any program is checked
+                    const anyProgramChecked = ['programAidBlind', 'programOldAgePension', 'programSSI', 'programTANF', 'programSNAP', 'programAND'].some(
+                        checkId => document.getElementById(checkId)?.checked
+                    );
+                    
+                    const financialSection = document.getElementById('financialDetailsSection');
+                    if (anyProgramChecked) {
+                        financialSection.style.display = 'none';
+                    } else {
+                        financialSection.style.display = 'block';
+                    }
+                }
+            });
+        });
+
+        // Add event listeners for conditional fields
+        document.addEventListener('DOMContentLoaded', function() {
+            // Interpreter language field
+            const interpreterYes = document.getElementById('interpreterYes');
+            const interpreterNo = document.getElementById('interpreterNo');
+            const interpreterLanguageGroup = document.getElementById('interpreterLanguageGroup');
+            
+            if (interpreterYes) {
+                interpreterYes.addEventListener('change', function() {
+                    if (this.checked) {
+                        interpreterLanguageGroup.style.display = 'block';
+                    }
+                });
+            }
+            
+            if (interpreterNo) {
+                interpreterNo.addEventListener('change', function() {
+                    if (this.checked) {
+                        interpreterLanguageGroup.style.display = 'none';
+                    }
+                });
+            }
+
+            // Home ownership other field
+            const homeOther = document.getElementById('homeOther');
+            const homeOtherGroup = document.getElementById('homeOtherGroup');
+            
+            if (homeOther) {
+                homeOther.addEventListener('change', function() {
+                    if (this.checked) {
+                        homeOtherGroup.style.display = 'block';
+                    }
+                });
+                
+                document.querySelectorAll('input[name="homeOwnership"]').forEach(radio => {
+                    if (radio.id !== 'homeOther') {
+                        radio.addEventListener('change', function() {
+                            if (this.checked) {
+                                homeOtherGroup.style.display = 'none';
+                            }
+                        });
+                    }
+                });
+            }
+
+            // Employment fields
+            const employedYes = document.getElementById('employedYes');
+            const employedNo = document.getElementById('employedNo');
+            const employedFields = document.getElementById('employedFields');
+            const unemployedFields = document.getElementById('unemployedFields');
+            
+            if (employedYes) {
+                employedYes.addEventListener('change', function() {
+                    if (this.checked) {
+                        employedFields.style.display = 'block';
+                        unemployedFields.style.display = 'none';
+                    }
+                });
+            }
+            
+            if (employedNo) {
+                employedNo.addEventListener('change', function() {
+                    if (this.checked) {
+                        employedFields.style.display = 'none';
+                        unemployedFields.style.display = 'block';
+                    }
+                });
+            }
+
+            // Program checkboxes - if "None" is checked, uncheck others
+            const programNone = document.getElementById('programNone');
+            const programCheckboxes = ['programAidBlind', 'programOldAgePension', 'programSSI', 'programTANF', 'programSNAP', 'programAND'];
+            
+            if (programNone) {
+                programNone.addEventListener('change', function() {
+                    if (this.checked) {
+                        programCheckboxes.forEach(id => {
+                            const checkbox = document.getElementById(id);
+                            if (checkbox) checkbox.checked = false;
+                        });
+                    }
+                });
+                
+                programCheckboxes.forEach(id => {
+                    const checkbox = document.getElementById(id);
+                    if (checkbox) {
+                        checkbox.addEventListener('change', function() {
+                            if (this.checked && programNone) {
+                                programNone.checked = false;
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
