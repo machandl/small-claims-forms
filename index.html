@@ -10,51 +10,57 @@
         window.requestFeeWaiver = false;
         
         window.nextPage = function() {
-            console.log('Next clicked, section:', window.currentSection);
+            console.log('window.nextPage() called, section:', window.currentSection);
             
-            // Validate current section
-            var currentSectionEl = document.querySelector('.section.active');
-            if (!currentSectionEl) return false;
-            
-            // Get all text inputs and textareas that should be filled
-            var allInputs = currentSectionEl.querySelectorAll('input[type="text"], input[type="date"], input[type="time"], input[type="tel"], textarea');
-            for (var i = 0; i < allInputs.length; i++) {
-                var input = allInputs[i];
-                
-                // Skip if field is hidden or disabled
-                if (input.offsetParent === null || input.disabled) {
-                    continue;
-                }
-                
-                // Only check if it has the required attribute
-                if (input.hasAttribute('required') && (!input.value || input.value.trim() === '')) {
-                    console.log('Empty required field found:', input.id || input.name);
-                    alert('Please fill in all required fields');
-                    input.focus();
-                    return false;
-                }
-            }
-            
-            // Check required checkboxes
-            var requiredCheckboxes = currentSectionEl.querySelectorAll('input[type="checkbox"][required]');
-            for (var i = 0; i < requiredCheckboxes.length; i++) {
-                var checkbox = requiredCheckboxes[i];
-                
-                // Skip if checkbox is hidden or disabled
-                if (checkbox.offsetParent === null || checkbox.disabled) {
-                    continue;
-                }
-                
-                if (!checkbox.checked) {
-                    console.log('Unchecked required checkbox:', checkbox.id || checkbox.name);
-                    alert('Please check all required acknowledgments');
-                    checkbox.focus();
-                    return false;
-                }
-            }
-            
-            console.log('Validation passed for section', window.currentSection);
             var section = window.currentSection;
+            
+            // Validate current section before advancing (skip section 7 - fee waiver)
+            if (section !== 7) {
+                var currentSectionEl = document.querySelector('.section.active');
+                if (currentSectionEl) {
+                    // Check text inputs, dates, times, and textareas
+                    var inputs = currentSectionEl.querySelectorAll('input[type="text"], input[type="date"], input[type="time"], input[type="tel"], textarea');
+                    for (var i = 0; i < inputs.length; i++) {
+                        var input = inputs[i];
+                        var labelText = input.previousElementSibling ? input.previousElementSibling.textContent : '';
+                        var isRequired = labelText.indexOf('(required') !== -1;
+                        
+                        if (isRequired && (!input.value || input.value.trim() === '')) {
+                            alert('Please fill in all required fields');
+                            input.focus();
+                            return false;
+                        }
+                    }
+                    
+                    // Only check acknowledgment checkboxes (sections 3 and 5 have these)
+                    // Don't check all checkbox-groups, only specific required ones
+                    if (section === 3) {
+                        var defendantJurisdiction = document.getElementById('defendantJurisdiction');
+                        if (defendantJurisdiction && !defendantJurisdiction.checked) {
+                            alert('Please check the defendant jurisdiction requirement');
+                            defendantJurisdiction.focus();
+                            return false;
+                        }
+                    }
+                    
+                    if (section === 5) {
+                        var serviceUnderstanding = document.getElementById('serviceUnderstanding');
+                        var filingDeclaration = document.getElementById('filingDeclaration');
+                        
+                        if (serviceUnderstanding && !serviceUnderstanding.checked) {
+                            alert('Please check the service acknowledgment');
+                            serviceUnderstanding.focus();
+                            return false;
+                        }
+                        
+                        if (filingDeclaration && !filingDeclaration.checked) {
+                            alert('Please check the filing declaration');
+                            filingDeclaration.focus();
+                            return false;
+                        }
+                    }
+                }
+            }
             
             // Section 5: generate summary
             if (section === 5) {
@@ -464,27 +470,27 @@
 
                     <div class="form-group">
                         <label>County <span class="label-hint">(required)</span></label>
-                        <input type="text" id="county" required>
+                        <input type="text" id="county">
                     </div>
 
                     <div class="form-group">
                         <label>Court Street Address <span class="label-hint">(required)</span></label>
-                        <input type="text" id="courtStreet" required>
+                        <input type="text" id="courtStreet">
                     </div>
 
                     <div class="form-group">
                         <label>Court City <span class="label-hint">(required)</span></label>
-                        <input type="text" id="courtCity" required>
+                        <input type="text" id="courtCity">
                     </div>
 
                     <div class="form-group">
                         <label>Court State <span class="label-hint">(required)</span></label>
-                        <input type="text" id="courtState" value="Colorado" required>
+                        <input type="text" id="courtState" value="Colorado">
                     </div>
 
                     <div class="form-group">
                         <label>Court ZIP Code <span class="label-hint">(required)</span></label>
-                        <input type="text" id="courtZip" pattern="[0-9]{5}" required>
+                        <input type="text" id="courtZip" pattern="[0-9]{5}">
                     </div>
 
                     <div class="button-group">
@@ -499,27 +505,27 @@
 
                     <div class="form-group">
                         <label>Full Name <span class="label-hint">(required)</span></label>
-                        <input type="text" id="plaintiffName" required>
+                        <input type="text" id="plaintiffName">
                     </div>
 
                     <div class="form-group">
                         <label>Street Address <span class="label-hint">(required)</span></label>
-                        <input type="text" id="plaintiffAddress" required>
+                        <input type="text" id="plaintiffAddress">
                     </div>
 
                     <div class="form-group">
                         <label>City <span class="label-hint">(required)</span></label>
-                        <input type="text" id="plaintiffCity" required>
+                        <input type="text" id="plaintiffCity">
                     </div>
 
                     <div class="form-group">
                         <label>State <span class="label-hint">(required)</span></label>
-                        <input type="text" id="plaintiffState" value="Colorado" required>
+                        <input type="text" id="plaintiffState" value="Colorado">
                     </div>
 
                     <div class="form-group">
                         <label>ZIP Code <span class="label-hint">(required)</span></label>
-                        <input type="text" id="plaintiffZip" pattern="[0-9]{5}" required>
+                        <input type="text" id="plaintiffZip" pattern="[0-9]{5}">
                     </div>
 
                     <div class="form-group">
@@ -567,7 +573,7 @@
                             
                             <div class="form-group">
                                 <label>Full Name <span class="label-hint">(required)</span></label>
-                                <input type="text" id="defendant1Name" required>
+                                <input type="text" id="defendant1Name">
                             </div>
 
                             <div class="form-group">
@@ -577,22 +583,22 @@
 
                             <div class="form-group">
                                 <label>Street Address <span class="label-hint">(required)</span></label>
-                                <input type="text" id="defendant1Address" required>
+                                <input type="text" id="defendant1Address">
                             </div>
 
                             <div class="form-group">
                                 <label>City <span class="label-hint">(required)</span></label>
-                                <input type="text" id="defendant1City" required>
+                                <input type="text" id="defendant1City">
                             </div>
 
                             <div class="form-group">
                                 <label>State <span class="label-hint">(required)</span></label>
-                                <input type="text" id="defendant1State" value="Colorado" required>
+                                <input type="text" id="defendant1State" value="Colorado">
                             </div>
 
                             <div class="form-group">
                                 <label>ZIP Code <span class="label-hint">(required)</span></label>
-                                <input type="text" id="defendant1Zip" pattern="[0-9]{5}" required>
+                                <input type="text" id="defendant1Zip" pattern="[0-9]{5}">
                             </div>
 
                             <div class="form-group">
@@ -629,7 +635,7 @@
                     <div class="form-group" style="margin-top: 30px;">
                         <label>Defendant jurisdiction requirement:</label>
                         <div class="checkbox-group">
-                            <input type="checkbox" id="defendantJurisdiction" required>
+                            <input type="checkbox" id="defendantJurisdiction">
                             <label for="defendantJurisdiction" style="margin: 0;">I confirm that the defendant(s) reside, are regularly employed, have an office for business, or are a student in this county, OR the claim involves real property in this county.</label>
                         </div>
                     </div>
@@ -651,13 +657,13 @@
 
                     <div class="form-group">
                         <label>Amount Claimed <span class="label-hint">(required - numbers only, no dollar sign)</span></label>
-                        <input type="text" id="claimAmount" placeholder="Enter amount like: 1500.00 or 750" pattern="[0-9]*\.?[0-9]*" required oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
+                        <input type="text" id="claimAmount" placeholder="Enter amount like: 1500.00 or 750" pattern="[0-9]*\.?[0-9]*" oninput="this.value = this.value.replace(/[^0-9.]/g, '')">
                         <small style="color: #666; font-size: 12px; margin-top: 5px; display: block;">Enter only numbers and decimal point (examples: 1500 or 1500.00)</small>
                     </div>
 
                     <div class="form-group">
                         <label>Description of Your Claim <span class="label-hint">(required - be specific, 100 word maximum)</span></label>
-                        <textarea id="claimDescription" required placeholder="Describe in detail:
+                        <textarea id="claimDescription" placeholder="Describe in detail:
 - What happened
 - When it happened
 - Why the defendant owes you money or should return property
@@ -698,7 +704,7 @@
                     <div class="form-group">
                         <label>Service acknowledgment:</label>
                         <div class="checkbox-group">
-                            <input type="checkbox" id="serviceUnderstanding" required>
+                            <input type="checkbox" id="serviceUnderstanding">
                             <label for="serviceUnderstanding" style="margin: 0;">I understand it is my responsibility to have each defendant served with the "Defendant's Copy" by a person 18 years or older who is not a party to this action, at least 15 days prior to trial, and to provide the Court with written proof of service.</label>
                         </div>
                     </div>
@@ -706,7 +712,7 @@
                     <div class="form-group">
                         <label>Filing declaration:</label>
                         <div class="checkbox-group">
-                            <input type="checkbox" id="filingDeclaration" required>
+                            <input type="checkbox" id="filingDeclaration">
                             <label for="filingDeclaration" style="margin: 0;">I declare under penalty of perjury that I have not filed more than 2 claims in any Small Claims Court in this County during this calendar month, nor more than 18 claims in this County this calendar year.</label>
                         </div>
                     </div>
@@ -1102,178 +1108,67 @@
         
         console.log('Script loaded! Current section:', currentSection);
         
-        // Wait for DOM to be ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', function() {
-                console.log('DOM loaded via event listener');
-                initializePage();
-            });
-        } else {
-            console.log('DOM already loaded');
-            initializePage();
-        }
+        console.log('Small Claims Questionnaire loaded');
         
-        function initializePage() {
-            console.log('Initializing page...');
-            attachButtonHandlers();
-            updateProgress();
-            setupConditionalFields();
-        }
-        
-        function attachButtonHandlers() {
-            // Find all buttons and attach handlers
-            const buttons = document.querySelectorAll('button');
-            console.log('Attaching handlers to', buttons.length, 'buttons');
+        // Add event listeners for automatic qualification checkboxes
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-advance when any of the first 6 program checkboxes are checked
+            var programCheckboxes = ['programAidBlind', 'programOldAgePension', 'programSSI', 'programTANF', 'programSNAP', 'programAND'];
             
-            buttons.forEach(function(button, index) {
-                const text = button.textContent.trim();
-                console.log('Button', index, ':', text);
-                
-                if (text === 'Next' || text.includes('Next')) {
-                    button.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log('Next button clicked!');
-                        handleNext();
-                        return false;
-                    }, false);
-                    button.addEventListener('touchend', function(e) {
-                        e.preventDefault();
-                        console.log('Next button touched!');
-                        handleNext();
-                        return false;
-                    }, false);
-                } else if (text === 'Back' || text.includes('Back')) {
-                    button.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log('Back button clicked');
-                        handleBack();
-                        return false;
-                    }, false);
-                } else if (text.includes('Generate')) {
-                    button.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        console.log('Generate button clicked');
-                        generateForm();
-                        return false;
-                    }, false);
-                } else if (text.includes('Add Second Defendant')) {
-                    button.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        addDefendant2();
-                        return false;
-                    }, false);
-                } else if (text.includes('Remove Defendant')) {
-                    button.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        removeDefendant2();
-                        return false;
-                    }, false);
+            programCheckboxes.forEach(function(id) {
+                var checkbox = document.getElementById(id);
+                if (checkbox) {
+                    checkbox.addEventListener('change', function() {
+                        if (this.checked && window.currentSection === 7) {
+                            // Uncheck "None of the above"
+                            var noneCheckbox = document.getElementById('programNone');
+                            if (noneCheckbox) noneCheckbox.checked = false;
+                            
+                            // Auto-advance to next section after a brief delay
+                            setTimeout(function() {
+                                if (typeof generateSummary === 'function') generateSummary();
+                                showSection(8);
+                            }, 500);
+                        }
+                    });
                 }
             });
             
-            console.log('Button handlers attached');
-        }
-        
-        function setupConditionalFields() {
-            // Event listeners for conditional fields will be set up here
-            console.log('Setting up conditional fields');
-        }
-        
-        function handleNext() {
-            console.log('handleNext called, section:', currentSection);
-            
-            // Simple validation - just check if required fields have values
-            const currentSectionEl = document.querySelector('.section.active');
-            if (!currentSectionEl) {
-                console.error('No active section found');
-                return;
+            // Handle "None of the above" checkbox
+            var noneCheckbox = document.getElementById('programNone');
+            if (noneCheckbox) {
+                noneCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        // Uncheck all program checkboxes
+                        programCheckboxes.forEach(function(id) {
+                            var checkbox = document.getElementById(id);
+                            if (checkbox) checkbox.checked = false;
+                        });
+                    }
+                });
             }
             
-            const requiredInputs = currentSectionEl.querySelectorAll('input[required]:not([type="radio"]):not([type="checkbox"]), textarea[required]');
-            console.log('Required inputs:', requiredInputs.length);
+            // Interpreter language field toggle
+            var interpreterYes = document.getElementById('interpreterYes');
+            var interpreterNo = document.getElementById('interpreterNo');
+            var languageGroup = document.getElementById('interpreterLanguageGroup');
             
-            for (let i = 0; i < requiredInputs.length; i++) {
-                const input = requiredInputs[i];
-                if (!input.value || input.value.trim() === '') {
-                    alert('Please fill in all required fields');
-                    input.focus();
-                    return;
-                }
+            if (interpreterYes) {
+                interpreterYes.addEventListener('change', function() {
+                    if (this.checked && languageGroup) {
+                        languageGroup.style.display = 'block';
+                    }
+                });
             }
             
-            // Check required checkboxes
-            const requiredCheckboxes = currentSectionEl.querySelectorAll('input[type="checkbox"][required]');
-            for (let i = 0; i < requiredCheckboxes.length; i++) {
-                if (!requiredCheckboxes[i].checked) {
-                    alert('Please check all required boxes');
-                    return;
-                }
+            if (interpreterNo) {
+                interpreterNo.addEventListener('change', function() {
+                    if (this.checked && languageGroup) {
+                        languageGroup.style.display = 'none';
+                    }
+                });
             }
-            
-            console.log('Validation passed');
-            
-            // Special handling for section 5
-            if (currentSection === 5) {
-                generateSummary();
-            }
-            
-            // Special handling for section 6 (Fee Waiver)
-            if (currentSection === 6) {
-                const feeWaiverYes = document.getElementById('feeWaiverYes');
-                requestFeeWaiver = feeWaiverYes && feeWaiverYes.checked;
-                console.log('Fee waiver:', requestFeeWaiver);
-                
-                if (!requestFeeWaiver) {
-                    generateSummary();
-                    showSection(8);
-                    return;
-                }
-            }
-            
-            // Special handling for section 7
-            if (currentSection === 7) {
-                generateSummary();
-                showSection(8);
-                return;
-            }
-            
-            // Normal progression
-            if (currentSection < totalSections) {
-                showSection(currentSection + 1);
-            }
-        }
-        
-        function handleBack() {
-            console.log('handleBack called, section:', currentSection);
-            
-            if (currentSection > 1) {
-                if (currentSection === 8 && !requestFeeWaiver) {
-                    showSection(6);
-                } else {
-                    showSection(currentSection - 1);
-                }
-            }
-        }
-
-        function updateProgress() {
-            const progress = (currentSection / totalSections) * 100;
-            document.getElementById('progressBar').style.width = progress + '%';
-        }
-
-        function showSection(sectionNum) {
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.remove('active');
-            });
-            document.querySelector(`.section[data-section="${sectionNum}"]`).classList.add('active');
-            currentSection = sectionNum;
-            updateProgress();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        });
 
         function addDefendant2() {
             if (defendant2Added) return;
